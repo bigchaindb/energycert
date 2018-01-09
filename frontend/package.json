@@ -4,7 +4,7 @@
   "license": "Apache 2.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --prod -H 0.0.0.0 --disable-host-check",
+    "start": "ng serve -H 0.0.0.0 --disable-host-check",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
