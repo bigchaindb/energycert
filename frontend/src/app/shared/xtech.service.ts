@@ -17,8 +17,7 @@ export class XtechService {
 
   //getUsersAmount
 
-  function test()
-  {
+  test() {
     console.log("TEST");
   }
 }

@@ -9,6 +9,7 @@ import { AppComponent } from './app.component'
 import { ConfigService } from './shared/config.service'
 import { AuthService } from './shared/auth.service'
 import { BdbService } from './shared/bdb.service'
+import { XtechService } from './shared/xtech.service'
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { ProfileComponent } from './profile/profile.component';
 import { LoginComponent } from './login/login.component';
@@ -29,7 +30,7 @@ import { TestComponent } from './test/test.component'
     BrowserAnimationsModule,
     FormsModule,
   ],
-  providers: [ConfigService, AuthService, BdbService],
+  providers: [ConfigService, AuthService, BdbService, XtechService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
