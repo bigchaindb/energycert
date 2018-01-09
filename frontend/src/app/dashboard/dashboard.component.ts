@@ -16,16 +16,18 @@ export class DashboardComponent implements OnInit {
   private keypair
 
   ngOnInit() {
-    this.txIds = []
-    this.keypair = this.bdbService.getKeypairFromSeed('demo')
+    //this.txIds = []
+    //this.keypair = this.bdbService.getKeypairFromSeed('demo')
   }
 
   public createTransaction() {
+    /*
     console.log('123')
     const asset = new Asset()
     asset.ns = 'ng-template-demo'
     const metadata = new Metadata()
     metadata.event = 'ng-template-demo-asset-create'
     this.bdbService.createNewAsset(this.keypair, asset, metadata).then(tx => this.txIds.push(tx.id))
+    */
   }
 }
