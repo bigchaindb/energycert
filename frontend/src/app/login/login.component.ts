@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 
+import { BdbService } from '../shared/bdb.service'
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -11,11 +13,19 @@ export class LoginComponent implements OnInit {
 
   public isBusy = false
 
-  constructor(private router: Router, /*private authService: AuthService*/) { }
+  constructor(private router: Router, private bdbService: BdbService) { }
 
   onSubmit(f: NgForm) {
+    /*
     this.isBusy = true
     const id = f.value.id
+    */
+
+    console.log(f.value)
+
+    let keypair = this.bdbService.getKeypairFromSeed('demo')
+    console.log(keypair)
+
     /*
     this.authService.login(id).then(authResponse => {
       this.isBusy = false
@@ -24,7 +34,7 @@ export class LoginComponent implements OnInit {
       }
     }).catch(() => this.isBusy = false)
     */
-    console.log(f.value)
+    // console.log(f.value)
   }
 
   ngOnInit() { }
