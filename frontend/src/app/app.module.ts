@@ -11,14 +11,16 @@ import { AuthService } from './shared/auth.service'
 import { BdbService } from './shared/bdb.service'
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { ProfileComponent } from './profile/profile.component';
-import { LoginComponent } from './login/login.component'
+import { LoginComponent } from './login/login.component';
+import { TestComponent } from './test/test.component'
 
 @NgModule({
   declarations: [
     AppComponent,
     DashboardComponent,
     ProfileComponent,
-    LoginComponent
+    LoginComponent,
+    TestComponent
   ],
   imports: [
     BrowserModule,

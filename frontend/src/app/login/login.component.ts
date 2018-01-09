@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { NgForm } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -7,9 +9,23 @@ import { Component, OnInit } from '@angular/core';
 })
 export class LoginComponent implements OnInit {
 
-  constructor() { }
+  public isBusy = false
 
-  ngOnInit() {
+  constructor(private router: Router, /*private authService: AuthService*/) { }
+
+  onSubmit(f: NgForm) {
+    this.isBusy = true
+    const id = f.value.id
+    /*
+    this.authService.login(id).then(authResponse => {
+      this.isBusy = false
+      if (authResponse.result) {
+        this.router.navigate([`/dashboard/${authResponse.context}`])
+      }
+    }).catch(() => this.isBusy = false)
+    */
+    console.log(f.value)
   }
 
+  ngOnInit() { }
 }

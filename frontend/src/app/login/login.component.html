@@ -12,4 +12,20 @@
         </div>
         <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
     </form>
-</div>   
+</div>
+
+
+<div id="login">
+
+          <div>
+            <form #f="ngForm" (ngSubmit)="onSubmit(f)" novalidate>
+              <div class="input" style="width: 300px">
+                <input name="id" ngModel required #first="ngModel" mdInput placeholder="enter your pass phrase" />
+              </div>
+              <div>
+                <button md-raised-button color="primary">Login</button>
+              </div>
+            </form>
+          </div>
+
+</div>
