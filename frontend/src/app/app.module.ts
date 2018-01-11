@@ -12,7 +12,8 @@ import { XtechService } from './shared/xtech.service'
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { ProfileComponent } from './profile/profile.component';
 import { LoginComponent } from './login/login.component';
-import { TestComponent } from './test/test.component'
+import { TestComponent } from './test/test.component';
+import { BlockchainComponent } from './blockchain/blockchain.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { TestComponent } from './test/test.component'
     DashboardComponent,
     ProfileComponent,
     LoginComponent,
-    TestComponent
+    TestComponent,
+    BlockchainComponent,
   ],
   imports: [
     BrowserModule,
