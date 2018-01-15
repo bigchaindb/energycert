@@ -15,6 +15,7 @@ import { ProfileComponent } from './profile/profile.component';
 import { LoginComponent } from './login/login.component';
 import { TestComponent } from './test/test.component'
 
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -30,7 +31,7 @@ import { TestComponent } from './test/test.component'
     BrowserAnimationsModule,
     FormsModule,
   ],
-  providers: [ConfigService, AuthService, BdbService, XtechService],
+  providers: [ConfigService, AuthService, BdbService, XtechService,HttpModule],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
