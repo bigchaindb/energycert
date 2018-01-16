@@ -8,6 +8,9 @@ import { ConfigService } from './shared/config.service'
 })
 
 export class AppComponent implements OnInit {
+
+  show:boolean = false;
+
   constructor(private configService: ConfigService) { }
 
   // load configuration on init
@@ -15,5 +18,9 @@ export class AppComponent implements OnInit {
     this.configService.getConfiguration().then(config => {
       localStorage.setItem('config', JSON.stringify(config))
     })
+  }
+
+  toggleCollapse() {
+    this.show = !this.show
   }
 }

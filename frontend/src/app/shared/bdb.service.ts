@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as driver from 'bigchaindb-driver'
-import bip39 from 'bip39'
+import * as bip39 from 'bip39'
 
 import { ConfigService } from './config.service'
 import { Keypair } from '../models/keypair.model'

@@ -1,31 +1,10 @@
 <div class="container">
-    <form class="form-signin">
+    <form #f="ngForm" (ngSubmit)="onSubmit(f)" novalidate class="form-signin">
         <h2 class="form-signin-heading">Please sign in</h2>
         <label for="inputEmail" class="sr-only">Email address</label>
-        <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required="" autofocus="">
+        <input type="email" ngModel required #first="ngModel" name="inputEmail" class="form-control" placeholder="Email address" autofocus>
         <label for="inputPassword" class="sr-only">Password</label>
-        <input type="password" id="inputPassword" class="form-control" placeholder="Password" required="">
-        <div class="checkbox">
-            <label>
-                <input type="checkbox" value="remember-me"> Remember me
-            </label>
-        </div>
+        <input type="password" ngModel required #first="ngModel" name="inputPassword" class="form-control" placeholder="Password">
         <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
     </form>
-</div>
-
-
-<div id="login">
-
-          <div>
-            <form #f="ngForm" (ngSubmit)="onSubmit(f)" novalidate>
-              <div class="input" style="width: 300px">
-                <input name="id" ngModel required #first="ngModel" mdInput placeholder="enter your pass phrase" />
-              </div>
-              <div>
-                <button md-raised-button color="primary">Login</button>
-              </div>
-            </form>
-          </div>
-
 </div>
