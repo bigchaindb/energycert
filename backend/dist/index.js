@@ -12,22 +12,6 @@ const DifferentRouter_1 = require("./routes/DifferentRouter");
 debug('express:server');
 // cluster master thread
 if (cluster.isMaster) {
-    /*
-    var workers = [];
-    // Spawn process with i
-    var spawn = function(i) {
-        workers[i] = cluster.fork();
-        // Restart worker on exit
-        workers[i].on('exit', function(code, signal) {
-            console.log('respawning worker', i);
-            spawn(i);
-        });
-    };
-    // Spawn processes
-    for (var i = 0; i < 2; i++) {
-        spawn(i);
-    }
-    */
     // spawn blockchain listener
     var listenerService;
     var spawnListenerService = function () {
@@ -61,7 +45,6 @@ else {
     switch (process.env['WORKER_TYPE']) {
         case 'listenerService':
             console.log('startin blockchain listener');
-            break;
         case 'restService':
             // rest api http express server
             console.log('startin rest api');
@@ -83,6 +66,5 @@ else {
             app.use('/api/v1/objects', ObjectsRouter_1.default);
             // listen
             var server = app.listen(3000);
-            break;
     }
 }

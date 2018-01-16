@@ -10,7 +10,16 @@ class ObjectsRouter {
         this.init();
     }
     basicRequest(req, res, next) {
-        return { kasdf: 'akfj' };
+        // rest api call example
+        /*
+        http.get({
+            hostname: 'localhost',
+            port: 80,
+            path: '/',
+        }, (response) => {
+            return res.send({'status':response});
+        })
+        */
     }
     /**
      * Take each handler, and attach to one of the Express.Router's

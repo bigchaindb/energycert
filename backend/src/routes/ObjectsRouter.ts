@@ -15,22 +15,14 @@ export class ObjectsRouter {
   public basicRequest(req: Request, res: Response, next: NextFunction) {
     // rest api call example
     /*
-    var options = {
-      host: 'http://www.google.com',
-      port: 80,
-      path: '/resource?id=foo&bar=baz',
-      method: 'POST'
-    };
-    http.request(options, function(res) {
-      console.log('STATUS: ' + res.statusCode);
-      console.log('HEADERS: ' + JSON.stringify(res.headers));
-      res.setEncoding('utf8');
-      res.on('data', function (chunk) {
-        console.log('BODY: ' + chunk);
-      });
-    }).end();
+    http.get({
+        hostname: 'localhost',
+        port: 80,
+        path: '/',
+    }, (response) => {
+        return res.send({'status':response});
+    })
     */
-    return {kasdf:'akfj'}
   }
 
 
