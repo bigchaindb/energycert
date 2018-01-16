@@ -7,32 +7,29 @@ import { Http, Response, RequestOptions, Headers } from '@angular/http';
 @Injectable()
 export class XtechService {
 
-  apiRoot: string = "https://wallet.staging.payxapi.com/apiv2/wallet/";
+  apiRoot: string  = "https://wallet.staging.payxapi.com/apiv2/wallet/";
 
-  userProfile: {};
+  userProfile: any = {};
 
   constructor(private http: Http) { }
 
-
-  makeHeader(string signature){
-  	headers = {
+/*
+  makeHeader(signature: string ){
+       //'api-key':??
+    let headers = {
           'accept': 'application/json',
   				'x-sign': signature.toUpperCase(),
   				'host': 'https://unikrn.staging.payxapi.com/apiv1:4337',
-          //'api-key':
   				'content-type': 'application/x-www-form-urlencoded'}
   	return headers
+
   }
+*/
 
-  signing( secret_key = "qcW19trrbO2SrKLsT30JbvY6IZMeFlow")
+/*
+  signing( secret_key: string = "qcW19trrbO2SrKLsT30JbvY6IZMeFlow") : string
 {
-    let signature="";
-  	//payload_url = urlencode(payload, quote_via=quote_plus)
-    //let payload = this.serialize({ myName: 'Samy is cool', api_key: 'BrmMGclWxjAij1TFHeNwqKSsbo51wc2F'});
-    let payload = { myName: 'Samy is cool', api_key: 'BrmMGclWxjAij1TFHeNwqKSsbo51wc2F'};
-    let secret_key = Charset.forName("UTF-8").encode(secret_key);
-
-/* var crypto = require('crypto'),
+ var crypto = require('crypto'),
     querystring = require('querystring'),
     signer = crypto.createHmac('sha256',
        new Buffer('qcW19trrbO2SrKLsT30JbvY6IZMeFlow', 'utf8')),
@@ -42,10 +39,11 @@ export class XtechService {
         moredata: 'data'
     });
     var signature = signer.update(postData).digest('hex').toUpperCase();
-*/
 
     return signature
+
 }
+*/
 
   getTransactionsStatus(userId : string = "51287e29-5601-454f-a0c5-0b542e868af1",wallet_uuid : string = "")
   {
@@ -67,13 +65,6 @@ export class XtechService {
       this.userProfile = res.json().data[0];
       console.log(res.json());
     });
-
-    url = `${this.apiRoot}/getwallet`;
-    this.http.post(url, {uuid: userId})
-    .toPromise()
-    .then(res => { console.log(res.json());
-                   this.userProfile =res.json().data[0];
-                 });
   }
 
   getUsersAmount(userId : string = "51287e29-5601-454f-a0c5-0b542e868af1")
@@ -82,7 +73,7 @@ export class XtechService {
       let url : string= `${this.apiRoot}/getwallet`;
       this.http.post(url, {uuid: userId}) //TODO add wallet_uuid
       .subscribe(res => {
-        console.log("Balance of "+userId+" :",res.json().data[0].total_balance);
+        console.log("Balance of "+ userId + " :",res.json().data[0].total_balance);
       });
   }
 
