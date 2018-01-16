@@ -16,14 +16,11 @@ export class LoginComponent implements OnInit {
   constructor(private router: Router, private bdbService: BdbService) { }
 
   onSubmit(f: NgForm) {
-    /*
     this.isBusy = true
+
     const id = f.value.id
-    */
 
-    console.log(f.value)
-
-    let keypair = this.bdbService.getKeypairFromSeed('demo')
+    let keypair = this.bdbService.getKeypairFromSeed(f.value.inputPassword+f.value.inputEmail)
     console.log(keypair)
 
     /*
