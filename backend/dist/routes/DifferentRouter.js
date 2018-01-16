@@ -10,7 +10,7 @@ class DifferentRouter {
         this.init();
     }
     getIt(req, res, next) {
-        return { sadf: 'response' };
+        return res.send({ 'status': 'done' });
     }
     /**
      * Take each handler, and attach to one of the Express.Router's

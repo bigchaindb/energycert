@@ -12,7 +12,7 @@ export class DifferentRouter {
   }
 
   public getIt(req: Request, res: Response, next: NextFunction) {
-    return {sadf:'response'}
+    return res.send({'status':'done'});
   }
 
   /**
