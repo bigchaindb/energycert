@@ -15,6 +15,7 @@ import { LoginComponent } from './login/login.component';
 import { TestComponent } from './test/test.component';
 import { BlockchainComponent } from './blockchain/blockchain.component';
 
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -30,7 +31,7 @@ import { BlockchainComponent } from './blockchain/blockchain.component';
     HttpModule,
     FormsModule,
   ],
-  providers: [ConfigService, AuthService, BdbService, XtechService],
+  providers: [ConfigService, AuthService, BdbService, XtechService,HttpModule],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
