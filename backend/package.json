@@ -24,12 +24,16 @@
     "sequelize-cli": "^3.1.0"
   },
   "dependencies": {
+    "bigchaindb-driver": "^3.2.0",
     "bluebird": "^3.5.1",
     "body-parser": "^1.18.2",
     "buffer-shims": "^1.0.0",
     "compression": "^1.7.1",
     "debug": "^3.1.0",
     "express": "^4.16.2",
-    "morgan": "^1.9.0"
+    "morgan": "^1.9.0",
+    "websocket": "^1.0.25",
+    "websocket-driver": "^0.7.0",
+    "ws": "^4.0.0"
   }
 }

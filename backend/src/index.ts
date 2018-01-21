@@ -6,10 +6,14 @@ import * as express from 'express';
 import * as logger from 'morgan';
 import * as bodyParser from 'body-parser';
 import * as compression from 'compression';
+import * as WebSocket from 'ws';
 
 // routes
 import ObjectsRouter from './routes/ObjectsRouter';
 import DifferentRouter from './routes/DifferentRouter';
+
+// config
+const config = require('./config/config');
 
 debug('express:server');
 
@@ -51,11 +55,28 @@ if (cluster.isMaster) {
     switch(process.env['WORKER_TYPE']) {
 
       case 'listenerService':
-          console.log('startin blockchain listener')
+          console.log('starting blockchain listener')
+
+
+
+          const ws = new WebSocket(config.ws_url);
+          ws.on('open', function open() {
+            console.log('connected');
+          });
+          ws.on('close', function close() {
+            console.log('disconnected');
+          });
+          ws.on('message', function incoming(data) {
+            console.log(data)
+          });
+
+
+
+          break
 
       case 'restService':
           // rest api http express server
-          console.log('startin rest api')
+          console.log('starting rest api')
           var app = express();
           // middleware
           app.use(function(req, res, next) {
@@ -74,5 +95,7 @@ if (cluster.isMaster) {
           app.use('/api/v1/objects', ObjectsRouter);
           // listen
           var server = app.listen(3000);
+          break
+
     }
 }
