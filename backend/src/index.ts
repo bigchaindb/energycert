@@ -10,6 +10,7 @@ import * as compression from 'compression';
 // routes
 import ObjectsRouter from './routes/ObjectsRouter';
 import DifferentRouter from './routes/DifferentRouter';
+import UsersRouter from './routes/UsersRouter';
 
 debug('express:server');
 
@@ -72,6 +73,7 @@ if (cluster.isMaster) {
           // routes
           app.use('/api/v1/different', DifferentRouter);
           app.use('/api/v1/objects', ObjectsRouter);
+          app.use('/api/v1/users', UsersRouter);
           // listen
           var server = app.listen(3000);
     }
