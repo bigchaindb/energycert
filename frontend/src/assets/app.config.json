@@ -11,6 +11,6 @@
         ]
     },
     "bdb": {
-        "apiUrl": "http://localhost:9984/api/v1/"
+        "apiUrl": "http://energycert.westeurope.cloudapp.azure.com:49984/api/v1/"
     }
 }
