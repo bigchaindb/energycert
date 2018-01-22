@@ -59,4 +59,10 @@ typings/
 
 # macosx
 .DS_Store
+
+# dist file
+backend/dist
+frontend/dist
+
+backend/package-lock.json
 frontend/package-lock.json

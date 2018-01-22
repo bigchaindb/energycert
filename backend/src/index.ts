@@ -11,6 +11,7 @@ import * as WebSocket from 'ws';
 // routes
 import ObjectsRouter from './routes/ObjectsRouter';
 import DifferentRouter from './routes/DifferentRouter';
+import UsersRouter from './routes/UsersRouter';
 
 // config
 const config = require('./config/config');
@@ -93,6 +94,7 @@ if (cluster.isMaster) {
           // routes
           app.use('/api/v1/different', DifferentRouter);
           app.use('/api/v1/objects', ObjectsRouter);
+          app.use('/api/v1/users', UsersRouter);
           // listen
           var server = app.listen(3000);
           break
