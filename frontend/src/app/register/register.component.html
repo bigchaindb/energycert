@@ -1,0 +1,12 @@
+<div class="container">
+    <form #f="ngForm" (ngSubmit)="onSubmit(f)" novalidate class="form-signin">
+        <h2 class="form-signin-heading">Register</h2>
+        <label for="inputEmail" class="sr-only">Email address</label>
+        <input type="email" ngModel required #first="ngModel" name="inputEmail" class="form-control" placeholder="Email address" autofocus>
+        <label for="inputName" class="sr-only">Name</label>
+        <input type="text" ngModel required #first="ngModel" name="inputName" class="form-control" placeholder="Name">
+        <label for="inputPassword" class="sr-only">Password</label>
+        <input type="password" ngModel required #first="ngModel" name="inputPassword" class="form-control" placeholder="Password">
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+    </form>
+</div>
