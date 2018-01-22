@@ -56,6 +56,18 @@ export class BdbService {
     return txList
   }
 
+  // get all users
+  async getAllUsers() {
+    await this._getConnection()
+    const txList = []
+    const assetList = await this.conn.searchAssets('"UserAsset"')
+    for (let asset of assetList) {
+      let tx = await this.conn.getTransaction(asset.id)
+      txList.push(tx)
+    }
+    return txList
+  }
+
   // searches assets in BDB based on a text input
   async searchChildAssets(text: string, link: string, parent: string) {
     await this._getConnection()
@@ -129,7 +141,7 @@ export class BdbService {
   }
 
   // Creates a new asset in BigchainDB
-  async createNewAsset(keypair: Keypair, asset: Asset, metadata: Metadata) {
+  async createNewAsset(keypair: Keypair, asset, metadata) {
     await this._getConnection()
     const condition = driver.Transaction.makeEd25519Condition(keypair.publicKey, true)
 

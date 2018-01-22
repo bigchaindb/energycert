@@ -18,20 +18,14 @@ export class LoginComponent implements OnInit {
   onSubmit(f: NgForm) {
     this.isBusy = true
 
-    const id = f.value.id
-
     let keypair = this.bdbService.getKeypairFromSeed(f.value.inputPassword+f.value.inputEmail)
-    console.log(keypair)
 
-    /*
-    this.authService.login(id).then(authResponse => {
-      this.isBusy = false
-      if (authResponse.result) {
-        this.router.navigate([`/dashboard/${authResponse.context}`])
-      }
-    }).catch(() => this.isBusy = false)
-    */
-    // console.log(f.value)
+    sessionStorage.setItem('user', JSON.stringify({
+      publicKey:keypair.publicKey,
+      privateKey:keypair.privateKey
+    }))
+    this.isBusy = false
+    this.router.navigate([`/`])
   }
 
   ngOnInit() { }

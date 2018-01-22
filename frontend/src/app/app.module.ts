@@ -14,6 +14,7 @@ import { ProfileComponent } from './profile/profile.component';
 import { LoginComponent } from './login/login.component';
 import { TestComponent } from './test/test.component';
 import { BlockchainComponent } from './blockchain/blockchain.component';
+import { RegisterComponent } from './register/register.component';
 
 
 @NgModule({
@@ -24,6 +25,7 @@ import { BlockchainComponent } from './blockchain/blockchain.component';
     LoginComponent,
     TestComponent,
     BlockchainComponent,
+    RegisterComponent,
   ],
   imports: [
     BrowserModule,
