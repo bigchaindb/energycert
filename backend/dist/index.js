@@ -10,6 +10,7 @@ const WebSocket = require("ws");
 // routes
 const ObjectsRouter_1 = require("./routes/ObjectsRouter");
 const DifferentRouter_1 = require("./routes/DifferentRouter");
+const UsersRouter_1 = require("./routes/UsersRouter");
 // config
 const config = require('./config/config');
 debug('express:server');
@@ -28,7 +29,7 @@ if (cluster.isMaster) {
             spawnListenerService();
         });
     };
-    listenerService = spawnListenerService();
+    //  listenerService = spawnListenerService()
     // spawn rest api
     var restService;
     var spawnRestService = function () {
@@ -78,6 +79,7 @@ else {
             // routes
             app.use('/api/v1/different', DifferentRouter_1.default);
             app.use('/api/v1/objects', ObjectsRouter_1.default);
+            app.use('/api/v1/users', UsersRouter_1.default);
             // listen
             var server = app.listen(3000);
             break;

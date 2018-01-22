@@ -56,31 +56,27 @@ export class XtechService {
   }
 
 
-  getUserProfile(userId : string = "51287e29-5601-454f-a0c5-0b542e868af1")
-  {
-    // POST /getwallet
-    let url : string= `${this.apiRoot}/getwallet`;
-    this.http.post(url, {uuid: userId})
-    .subscribe(res => {
-      this.userProfile = res.json().data[0];
-      console.log(res.json());
-    });
-  }
-
   getUsersAmount(userId : string = "51287e29-5601-454f-a0c5-0b542e868af1")
   {
-      // POST /gettrx
-      let url : string= `${this.apiRoot}/getwallet`;
-      this.http.post(url, {uuid: userId}) //TODO add wallet_uuid
-      .subscribe(res => {
-        console.log("Balance of "+ userId + " :",res.json().data[0].total_balance);
-      });
+      // call POST /getwallet in the backend
+
+      // let url : string= `${this.apiRoot}/getwallet`;
+      // this.http.post(url, {uuid: userId}) //TODO add wallet_uuid
+      // .subscribe(res => {
+      //   console.log("Balance of "+ userId + " :",res.json().data[0].total_balance);
+      // });
+
+      //redirect to backend
+      this.http.post("http://localhost:3000/api/v1/users/amount", {uuid: userId}) //TODO add wallet_uuid
+      .subscribe(
+        res => { console.log("Balance of "+ userId + " :",res.json().amount);},
+        error => { console.log("Error Message: " + error)});
   }
 
   test() {
     //this.signing();
-      this.getUserProfile();
-      console.log(this.userProfile)
+    //  this.getUserProfile();
+
       this.getUsersAmount();
     /*
     console.log("TEST");

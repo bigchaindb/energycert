@@ -34,7 +34,7 @@ if (cluster.isMaster) {
             spawnListenerService();
         });
     }
-    listenerService = spawnListenerService()
+  //  listenerService = spawnListenerService()
 
     // spawn rest api
     var restService

@@ -1,20 +1,18 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import * as request from 'request';
+const config =  require('../config/config');
+
 
 export class UsersRouter {
     router: Router;
-    apiRoot: string;
 
     /**
      * Initialize the MeRouter
      */
     constructor() {
-        this.apiRoot = "https://wallet.staging.payxapi.com/apiv2/wallet/"
-
         this.router = Router();
         this.init();
     }
-
     /**
       Get wallet balance. For flagged amounts special business logic
       can be implemented in front end application.
@@ -25,12 +23,10 @@ export class UsersRouter {
     */
     getAmount(req: Request, res: Response, next: NextFunction) {
 
-        //console.log("BaseRoote",this.apiRoot);
-
-        let userId : string = "1df06465-a30d-455d-8cee-147510ba1c82";//req.userId;
+        let userId : string = req.body.uuid;
         // POST /getwallet
         request.post(
-            'https://wallet.staging.payxapi.com/apiv2/wallet/getwallet',
+            config.xtech_api_url+'/getwallet',
             { json: { uuid: userId } },
             function (error, response, body) {
                 if (!error && response.statusCode == 200) {
@@ -66,7 +62,7 @@ export class UsersRouter {
 
         // POST /transfer
         request.post(
-            'https://wallet.staging.payxapi.com/apiv2/wallet/transfer',
+              config.xtech_api_url+'/transfer',
             { json: { from_wallet: from_wallet,
                       to_wallet: to_wallet,
                       order_id: order_id,
@@ -94,10 +90,10 @@ export class UsersRouter {
     */
     addWallet(req: Request, res: Response, next: NextFunction) {
 
-        let userId : string = "1234567891234";//req.userId;
+        let userId : string = "1234567891234";//req.params.uuid;
         // POST addWallet
         request.post(
-            'https://wallet.staging.payxapi.com/apiv2/wallet/addWallet',
+            config.xtech_api_url+'/addWallet',
             { json: { uuid: userId,  state: 'active'} },
             function (error, response, body) {
                 if (!error && response.statusCode == 200) {
@@ -108,16 +104,14 @@ export class UsersRouter {
         );
     }
 
-
-
     /**
      * Take each handler, and attach to one of the Express.Router's
      * endpoints.
      */
     init() {
-        this.router.get('/amount', this.getAmount);
-        this.router.get('/transfer', this.transfer);
-        this.router.get('/addWallet', this.addWallet);
+        this.router.post('/amount', this.getAmount);
+        this.router.post('/transfer', this.transfer);
+        this.router.post('/addWallet', this.addWallet);
     }
 }
 
