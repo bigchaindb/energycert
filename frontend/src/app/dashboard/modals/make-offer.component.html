@@ -1,0 +1,24 @@
+<div class="modal-container">
+
+  <div class="modal-header">
+    <h3 class="modal-title">Make an Offer to: {{offeredUser.name}} <br> Public Key: {{offeredUser.public_key}}</h3>
+  </div>
+
+  <div *ngIf="!showDone;" class="modal-body">
+      <div class="container">
+          <form #f="ngForm" (ngSubmit)="onSubmit(f)" novalidate class="form-signin">
+              <label for="inputMoney" class="sr-only">Offer the amount of money you want to give for the tokens</label>
+              <input type="number" ngModel required #first="ngModel" name="inputEmail" class="form-control" placeholder="Amount of Money" autofocus>
+              <label for="inputTokens" class="sr-only">Write here the amount of tokens you want to get for the money</label>
+              <input type="number" ngModel required #first="ngModel" name="inputPassword" class="form-control" placeholder="Amount of Tokens">
+              <button class="btn btn-lg btn-primary btn-block" type="submit">Make Offer</button>
+          </form>
+      </div>
+  </div>
+  <div *ngIf="showDone;" class="modal-body">
+      <div class="container">
+        DONE
+        <button class="btn btn-lg btn-primary btn-block" (click)="activeModal.close();" type="button">OK</button>
+      </div>
+  </div>
+</div>

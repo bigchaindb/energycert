@@ -15,7 +15,8 @@ import { LoginComponent } from './login/login.component';
 import { TestComponent } from './test/test.component';
 import { BlockchainComponent } from './blockchain/blockchain.component';
 import { RegisterComponent } from './register/register.component';
-
+import { MakeOfferComponent } from './dashboard/modals/make-offer.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [
@@ -26,14 +27,17 @@ import { RegisterComponent } from './register/register.component';
     TestComponent,
     BlockchainComponent,
     RegisterComponent,
+    MakeOfferComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpModule,
-    FormsModule,
+    NgbModule.forRoot(),
+    FormsModule
   ],
   providers: [ConfigService, AuthService, BdbService, XtechService,HttpModule],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [MakeOfferComponent]
 })
 export class AppModule { }

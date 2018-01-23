@@ -55,10 +55,10 @@ export class UsersRouter {
      */
     transfer(req, res, next) {
 
-        let from_wallet :string = "51287e29-5601-454f-a0c5-0b542e868af1";
-        let to_wallet :string = "1df06465-a30d-455d-8cee-147510ba1c82";
-        let order_id: number = 1;
-        let amount: number = 1;
+        let from_wallet :string = req.body.from_wallet;
+        let to_wallet :string = req.body.to_wallet;
+        let order_id: number = req.body.order_id;
+        let amount: number = req.body.amount;
 
         // POST /transfer
         request.post(
@@ -90,11 +90,10 @@ export class UsersRouter {
     */
     addWallet(req: Request, res: Response, next: NextFunction) {
 
-        let userId : string = "1234567891234";//req.params.uuid;
         // POST addWallet
         request.post(
             config.xtech_api_url+'/addWallet',
-            { json: { uuid: userId,  state: 'active'} },
+            { json: { user_id: req.body.user_id,  state: 'active'} },
             function (error, response, body) {
                 if (!error && response.statusCode == 200) {
                     console.log(body)
