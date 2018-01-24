@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node dist/index.js --nouse-idle-notification —max-new-space-size=2048 —max-old-space-size=8192",
+    "start": "DEBUG=server:* node dist/index.js --nouse-idle-notification —max-new-space-size=2048 —max-old-space-size=8192",
     "build": "gulp build",
     "watch": "gulp watch"
   },
@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "bigchaindb-driver": "^3.2.0",
+    "bip39": "^2.5.0",
     "bluebird": "^3.5.1",
     "body-parser": "^1.18.2",
     "buffer-shims": "^1.0.0",
@@ -32,7 +33,10 @@
     "debug": "^3.1.0",
     "express": "^4.16.2",
     "morgan": "^1.9.0",
+    "mysql2": "^1.5.1",
     "request": "^2.83.0",
+    "sequelize": "^4.32.1",
+    "uuid": "^3.2.1",
     "websocket": "^1.0.25",
     "websocket-driver": "^0.7.0",
     "ws": "^4.0.0"

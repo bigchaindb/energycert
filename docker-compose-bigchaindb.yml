@@ -1,0 +1,59 @@
+version: '3'
+
+services:
+
+  backend:
+    image: node
+    volumes:
+      - ./backend:/backend:ro
+    working_dir: /backend
+    ports:
+      - "4000:4000"
+    depends_on:
+      - mysql
+      - bigchaindb
+    environment:
+      - MYSQL_HOST=mysql
+      - BIGCHAINDB_HOST=bigchaindb
+    command: npm run start
+
+  mysql:
+    image: mysql
+    volumes:
+      - ./tmp/mysql:/docker-entrypoint-initdb.d:ro
+    environment:
+      - MYSQL_ROOT_PASSWORD=1234
+      - MYSQL_DATABASE=database
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=1234
+    ports:
+      - "3306:3306"
+
+  mdb:
+    image: mongo:3.4.3
+    ports:
+      - "27017"
+    command: mongod --replSet=bigchain-rs
+
+  bigchaindb:
+    image: bigchaindb/bigchaindb
+    depends_on:
+      - mdb
+    volumes:
+      - ./tmp/bigchaindb_docker:/data
+    environment:
+      BIGCHAINDB_DATABASE_HOST: mdb
+      BIGCHAINDB_DATABASE_PORT: 27017
+      BIGCHAINDB_SERVER_BIND: 0.0.0.0:9984
+      BIGCHAINDB_DATABASE_BACKEND: mongodb
+      BIGCHAINDB_DATABASE_NAME: bigchain
+      BIGCHAINDB_KEYPAIR_PUBLIC: 8wHUvvraRo5yEoJAt66UTZaFq9YZ9tFFwcauKPDtjkGw
+      BIGCHAINDB_KEYPAIR_PRIVATE: 5C5Cknco7YxBRP9AgB1cbUVTL4FAcooxErLygw1DeG2D
+      BIGCHAINDB_DATABASE_REPLICASET: bigchain-rs
+      BIGCHAINDB_WSSERVER_SCHEME: ws
+      BIGCHAINDB_WSSERVER_HOST: 0.0.0.0
+      BIGCHAINDB_WSSERVER_PORT: 9985
+    ports:
+      - "9984:9984"
+      - "9985:9985"
+    command: start
