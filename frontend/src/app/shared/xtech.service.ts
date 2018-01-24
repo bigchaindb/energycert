@@ -8,6 +8,8 @@ import { Http, Response, RequestOptions, Headers } from '@angular/http';
 export class XtechService {
 
   apiRoot: string  = "https://wallet.staging.payxapi.com/apiv2/wallet/";
+  backendURL: string "http://localhost:3000/api/v1/users";
+
 
   userProfile: any = {};
 
@@ -50,9 +52,8 @@ export class XtechService {
     // POST /gettrx
     let url : string= `${this.apiRoot}/gettrx`;
     this.http.post(url, {uuid: userId}) //TODO add wallet_uuid
-    .subscribe(res => {
-      console.log(res.json()); //TODO take last array ???
-    });
+    .subscribe(res => {console.log(res.json()); },
+               error => { console.log("Error Message: " + error)}); //TODO take last array ???
   }
 
 
@@ -60,14 +61,8 @@ export class XtechService {
   {
       // call POST /getwallet in the backend
 
-      // let url : string= `${this.apiRoot}/getwallet`;
-      // this.http.post(url, {uuid: userId}) //TODO add wallet_uuid
-      // .subscribe(res => {
-      //   console.log("Balance of "+ userId + " :",res.json().data[0].total_balance);
-      // });
-
       //redirect to backend
-      this.http.post("http://localhost:3000/api/v1/users/amount", {uuid: userId}) //TODO add wallet_uuid
+      this.http.post(backendURL+"/amount", {uuid: userId}) //TODO add wallet_uuid
       .subscribe(
         res => { console.log("Balance of "+ userId + " :",res.json().amount);},
         error => { console.log("Error Message: " + error)});
@@ -78,23 +73,6 @@ export class XtechService {
     //  this.getUserProfile();
 
       this.getUsersAmount();
-    /*
-    console.log("TEST");
 
-    console.log("GET");
-    let url = `${this.apiRoot}/get`;
-
-    let headers =  new Headers();
-    headers.append( 'accept', 'application/json',
-                    'host', 'https://wallet.staging.payxapi.com/apiv2/wallet/',
-                    'content-type', 'application/x-www-form-urlencoded');
-     let opts = new RequestOptions();
-     opts.headers = headers;
-
-    this.http.post(url,opts)
-      .subscribe(res => console.log(res.json()),
-                 error => { console.log("Error Message: " + error)});
-      console.log("Ergebniss: ",this.res)
-      */
   }
 }

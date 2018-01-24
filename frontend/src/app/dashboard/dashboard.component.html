@@ -11,33 +11,12 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>Name1</td>
-                            <td>9991</td>
+                    <tbody *ngIf="users;">
+                        <tr *ngFor="let user of users; let i = index">
+                            <td>{{user.metadata.name}}</td>
+                            <td>XXXXXXX</td>
                             <td>
-                              <button class="btn btn-outline-primary">Send offer</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Name2</td>
-                            <td>9992</td>
-                            <td>
-                              <button class="btn btn-outline-primary">Send offer</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Name3</td>
-                            <td>0</td>
-                            <td>
-                              <button class="btn btn-outline-primary">Send offer</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Name4</td>
-                            <td>1</td>
-                            <td>
-                              <button class="btn btn-outline-primary">Send offer</button>
+                              <button class="btn btn-outline-primary" (click)='openMakeOffer(user)'>Send offer</button>
                             </td>
                         </tr>
                     </tbody>
