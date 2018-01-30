@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const BdbService_1 = require("../bdbservice/BdbService");
+const xtechAPI = require("../XtechService/xtechservice");
 const debug = require("debug");
 const uuidV4 = require("uuid/v4");
 // config
@@ -33,17 +34,11 @@ function handleUserAsset(transaction) {
     /*
     console.log("public key: <public Key>")
     console.log(transaction.inputs[0].owners_before[0])
-  
-    console.log("operation: CREATE")
-    console.log(transaction.operation)
-  
-    console.log("metadata email: <email>")
-    console.log(transaction.metadata.email)
-  
-    console.log("metadata name: <name>")
-    console.log(transaction.metadata.name)
     */
     // create user on xtech
+    xtechAPI.addWallet("1234567890122", 'active', function (result) {
+        return result;
+    });
     // save user
     models.users.create({
         email: transaction.metadata.email,
@@ -57,7 +52,6 @@ function handleUserAsset(transaction) {
     });
 }
 function handleOfferAsset(transaction) {
-    console.log(transaction);
     // input checks
     if (transaction.operation !== "CREATE" ||
         transaction.asset.data.data !== "OfferAsset" ||
@@ -75,7 +69,20 @@ function handleOfferAsset(transaction) {
         return;
     }
     // money to escrow
-    // TODO
+    // money from escrow to new account
+    /*
+    let parameters =
+    {
+      to_wallet : "4ca00f34-1486-4375-b30b-cbc1e939f51b",
+      from_wallet : "51287e29-5601-454f-a0c5-0b542e868af1",
+      order_id : 1,
+      amount:  2
+    }
+    // call xtech API: POST /getwallet
+    xtechAPI.transfer(parameters, function(results){
+      return results;
+    });
+    */
     // update updated
     BdbService_1.transferAsset(transaction, config.xtech_keypair, config.xtech_keypair.publicKey, { allocation: "allocated" }).then((tx) => {
         log('offerAsset allocated updated');
@@ -87,7 +94,19 @@ function handleOfferAsset(transaction) {
     */
 }
 function handleCancelAsset(transaction) {
-    // checks
+    // input checks
+    if (transaction.operation !== "CREATE" ||
+        transaction.asset.data.data !== "CancelAsset" ||
+        transaction.asset.data.timestamp === undefined ||
+        transaction.asset.data.offerid === undefined) {
+        log('cancelAsset missing parameters');
+        return;
+    }
+    // sent to xtech?
+    if (transaction.outputs[0].public_keys.length !== 1 || transaction.outputs[0].public_keys[0] !== config.xtech_keypair.publicKey) {
+        log('offerAsset owner error');
+        return;
+    }
     // update status
     /*
     getAssetHistory(transaction.id).then((txList)=>{
@@ -95,6 +114,17 @@ function handleCancelAsset(transaction) {
     })
     */
     // money from escrow back to owner
+    // money from escrow to new account
+    let parameters = {
+        to_wallet: "4ca00f34-1486-4375-b30b-cbc1e939f51b",
+        from_wallet: "51287e29-5601-454f-a0c5-0b542e868af1",
+        order_id: 1,
+        amount: 2
+    };
+    // call xtech API: POST /getwallet
+    xtechAPI.transfer(parameters, function (results) {
+        return results;
+    });
 }
 function handleAcceptAsset(transaction) {
     // checks
@@ -108,4 +138,14 @@ function handleAcceptAsset(transaction) {
 function handleTokenTransfer(transaction) {
     // checks
     // money from escrow to new account
+    let parameters = {
+        to_wallet: "4ca00f34-1486-4375-b30b-cbc1e939f51b",
+        from_wallet: "51287e29-5601-454f-a0c5-0b542e868af1",
+        order_id: 1,
+        amount: 2
+    };
+    // call xtech API: POST /getwallet
+    xtechAPI.transfer(parameters, function (results) {
+        return results;
+    });
 }

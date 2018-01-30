@@ -44,21 +44,12 @@ function handleUserAsset(transaction) {
   /*
   console.log("public key: <public Key>")
   console.log(transaction.inputs[0].owners_before[0])
-
-  console.log("operation: CREATE")
-  console.log(transaction.operation)
-
-  console.log("metadata email: <email>")
-  console.log(transaction.metadata.email)
-
-  console.log("metadata name: <name>")
-  console.log(transaction.metadata.name)
   */
 
   // create user on xtech
   xtechAPI.addWallet("1234567890122", 'active', function(result){
-     return result;
-     });
+    return result;
+  });
 
   // save user
   models.users.create({
@@ -74,7 +65,6 @@ function handleUserAsset(transaction) {
 }
 
 function handleOfferAsset(transaction) {
-  console.log(transaction)
   // input checks
   if (
     transaction.operation !== "CREATE" ||
@@ -120,7 +110,21 @@ function handleOfferAsset(transaction) {
 }
 
 function handleCancelAsset(transaction) {
-  // checks
+  // input checks
+  if (
+    transaction.operation !== "CREATE" ||
+    transaction.asset.data.data !== "CancelAsset" ||
+    transaction.asset.data.timestamp === undefined ||
+    transaction.asset.data.offerid === undefined
+  ){
+    log('cancelAsset missing parameters')
+    return
+  }
+  // sent to xtech?
+  if (transaction.outputs[0].public_keys.length !== 1 || transaction.outputs[0].public_keys[0] !== config.xtech_keypair.publicKey) {
+    log('offerAsset owner error')
+    return
+  }
   // update status
   /*
   getAssetHistory(transaction.id).then((txList)=>{
