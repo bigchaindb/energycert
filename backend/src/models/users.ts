@@ -4,10 +4,12 @@ import * as uuidV4 from "uuid/v4"
 module.exports = function(sequelize, DataTypes) {
   var users = sequelize.define("users", {
     userid: {type:DataTypes.STRING, primaryKey:true},
-    publickey: DataTypes.STRING
+    publickey: DataTypes.STRING,
+    name: DataTypes.STRING,
+    email: DataTypes.STRING
   },{
-    timestamps: true,
-    paranoid: true,
+    timestamps: false,
+    paranoid: false,
     charset: 'utf8',
     collate: 'utf8_unicode_ci'
   });

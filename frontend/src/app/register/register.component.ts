@@ -26,7 +26,7 @@ export class RegisterComponent implements OnInit {
       name: f.value.inputName
     }
     this.bdbService.createNewAsset(keypair, asset, metadata).then(()=>{
-      sessionStorage.setItem('user', JSON.stringify({
+      localStorage.setItem('user', JSON.stringify({
         publicKey:keypair.publicKey,
         privateKey:keypair.privateKey
       }))

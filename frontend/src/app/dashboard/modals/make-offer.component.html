@@ -8,9 +8,9 @@
       <div class="container">
           <form #f="ngForm" (ngSubmit)="onSubmit(f)" novalidate class="form-signin">
               <label for="inputMoney" class="sr-only">Offer the amount of money you want to give for the tokens</label>
-              <input type="number" ngModel required #first="ngModel" name="inputEmail" class="form-control" placeholder="Amount of Money" autofocus>
+              <input type="number" ngModel required #first="ngModel" name="inputMoney" class="form-control" placeholder="Amount of Money" autofocus>
               <label for="inputTokens" class="sr-only">Write here the amount of tokens you want to get for the money</label>
-              <input type="number" ngModel required #first="ngModel" name="inputPassword" class="form-control" placeholder="Amount of Tokens">
+              <input type="number" ngModel required #first="ngModel" name="inputTokens" class="form-control" placeholder="Amount of Tokens">
               <button class="btn btn-lg btn-primary btn-block" type="submit">Make Offer</button>
           </form>
       </div>

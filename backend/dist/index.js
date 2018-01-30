@@ -57,7 +57,7 @@ else {
     switch (process.env['WORKER_TYPE']) {
         case 'listenerService':
             log('starting blockchain listener');
-            const ws = new WebSocket(config.ws_url);
+            const ws = new WebSocket(config.ws_url, { origin: 'http://localhost:9984' });
             ws.on('open', function open() {
                 //console.log('connected');
             });

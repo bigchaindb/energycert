@@ -1,10 +1,12 @@
 <div class="container">
-    <form #f="ngForm" (ngSubmit)="onSubmit(f)" novalidate class="form-signin">
-        <h2 class="form-signin-heading">Please sign in</h2>
-        <label for="inputEmail" class="sr-only">Email address</label>
-        <input type="email" ngModel required #first="ngModel" name="inputEmail" class="form-control" placeholder="Email address" autofocus>
-        <label for="inputPassword" class="sr-only">Password</label>
-        <input type="password" ngModel required #first="ngModel" name="inputPassword" class="form-control" placeholder="Password">
-        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-    </form>
+    <div class="col-md-6 centered">
+        <form #f="ngForm" (ngSubmit)="onSubmit(f)" novalidate class="form-signin">
+            <h2 class="form-signin-heading">Please sign in</h2>
+            <label for="inputEmail" class="sr-only">Email address</label>
+            <input type="email" ngModel required #first="ngModel" name="inputEmail" class="form-control" placeholder="Email address" autofocus>
+            <label for="inputPassword" class="sr-only">Password</label>
+            <input type="password" ngModel required #first="ngModel" name="inputPassword" class="form-control" placeholder="Password">
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+        </form>
+    </div>
 </div>

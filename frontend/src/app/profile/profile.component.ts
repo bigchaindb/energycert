@@ -18,7 +18,7 @@ export class ProfileComponent implements OnInit {
 
   init()
   {
-    let keypair = JSON.parse(sessionStorage.getItem('user'))
+    let keypair = JSON.parse(localStorage.getItem('user'))
     const userAssets =  this.bdbService.getAssetsInWallet(keypair.publicKey, false)
     .then( res =>
       {
@@ -27,15 +27,17 @@ export class ProfileComponent implements OnInit {
           switch(currentAsset.asset.data.data)
           {
             case "OfferAsset":
-                                break;
+              break;
+            case "TokenAsset":
+              // count tokens
+              break;
             case "UserAsset":
-                                this.userProfile.username = currentAsset.metadata.name
-                                this.userProfile.email = currentAsset.metadata.email
-                                this.userProfile.public_key = keypair.publicKey;
-                                break;
-
-            default:        //ERROR
-                            break;
+              this.userProfile.username = currentAsset.metadata.name
+              this.userProfile.email = currentAsset.metadata.email
+              this.userProfile.public_key = keypair.publicKey;
+              break;
+            default: //ERROR
+              break;
           }
         })
       }

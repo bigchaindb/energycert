@@ -28,15 +28,17 @@ export class MakeOfferComponent {
     //hide offer interface and show done
 
     // make an offer-asset
-    let keypair = JSON.parse(sessionStorage.getItem('user'))
-    let asset = {data:'OfferAsset', timestamp: Date.now()}
-    let metadata = {
-      sender_public_key: keypair.public_key,
+    let config = JSON.parse(localStorage.getItem('config'))
+    let keypair = JSON.parse(localStorage.getItem('user'))
+    let asset = {
+      data:'OfferAsset',
+      timestamp: Date.now(),
       receiver_public_key: this.offeredUser.public_key,
       offered_money: f.value.inputMoney,
       offered_tokens:f.value.inputTokens
     }
-    this.bdbService.createNewAsset(keypair, asset, metadata).then(()=>{
+    let metadata = null
+    this.bdbService.createNewAssetWithOwner(keypair, config.xtechpubkey, asset, metadata).then(()=>{
         this.showDone = true;
     })
   }

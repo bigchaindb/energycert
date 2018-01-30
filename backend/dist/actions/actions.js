@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const BdbService_1 = require("../bdbservice/BdbService");
 const debug = require("debug");
+const uuidV4 = require("uuid/v4");
 // config
 const config = require('../config/config');
 // debug
@@ -25,7 +26,7 @@ function handleUserAsset(transaction) {
     // input checks
     if (transaction.operation !== "CREATE" ||
         transaction.metadata.email === undefined ||
-        transaction.metadata.kra === undefined) {
+        transaction.metadata.name === undefined) {
         log('userAsset missing parameters');
         return;
     }
@@ -43,19 +44,65 @@ function handleUserAsset(transaction) {
     console.log(transaction.metadata.name)
     */
     // create user on xtech
-    // save user localy
+    // save user
+    models.users.create({
+        email: transaction.metadata.email,
+        name: transaction.metadata.name,
+        userid: uuidV4(),
+        publickey: transaction.inputs[0].owners_before[0]
+    }).then((user) => {
+        log('user saved!');
+    }).catch((err) => {
+        log('userAsset db save error');
+    });
 }
 function handleOfferAsset(transaction) {
-    // checks
+    console.log(transaction);
+    // input checks
+    if (transaction.operation !== "CREATE" ||
+        transaction.asset.data.data !== "OfferAsset" ||
+        transaction.asset.data.timestamp === undefined ||
+        transaction.asset.data.receiver_public_key === undefined ||
+        transaction.asset.data.offered_money === undefined ||
+        transaction.asset.data.offered_tokens === undefined ||
+        transaction.metadata !== null) {
+        log('offerAsset missing parameters');
+        return;
+    }
+    // sent to xtech?
+    if (transaction.outputs[0].public_keys.length !== 1 || transaction.outputs[0].public_keys[0] !== config.xtech_keypair.publicKey) {
+        log('offerAsset owner error');
+        return;
+    }
     // money to escrow
+    // TODO
+    // update updated
+    BdbService_1.transferAsset(transaction, config.xtech_keypair, config.xtech_keypair.publicKey, { allocation: "allocated" }).then((tx) => {
+        log('offerAsset allocated updated');
+    });
+    /*
+    transferAsset(transaction, config.xtech_keypair, config.xtech_keypair.publicKey, {allocation:'failed'}).then((tx)=>{
+      log('offerAsset failed updated')
+    })
+    */
 }
 function handleCancelAsset(transaction) {
     // checks
     // update status
+    /*
+    getAssetHistory(transaction.id).then((txList)=>{
+      console.log(txList)
+    })
+    */
     // money from escrow back to owner
 }
 function handleAcceptAsset(transaction) {
     // checks
+    /*
+    getAssetHistory(transaction.id).then((txList)=>{
+      console.log(txList)
+    })
+    */
     // update status
 }
 function handleTokenTransfer(transaction) {

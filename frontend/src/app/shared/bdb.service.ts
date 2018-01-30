@@ -167,6 +167,33 @@ export class BdbService {
     return tx
   }
 
+  // Creates a new asset in BigchainDB
+  async createNewAssetWithOwner(keypair: Keypair, publickey, asset, metadata) {
+    await this._getConnection()
+    const condition = driver.Transaction.makeEd25519Condition(publickey, true)
+
+    const output = driver.Transaction.makeOutput(condition)
+    output.public_keys = [publickey]
+
+    const transaction = driver.Transaction.makeCreateTransaction(
+      asset,
+      metadata,
+      [output],
+      keypair.publicKey
+    )
+
+    const txSigned = driver.Transaction.signTransaction(transaction, keypair.privateKey)
+    let tx
+    await this.conn.postTransaction(txSigned)
+      .then(() => this.conn.pollStatusAndFetchTransaction(txSigned.id))
+      .then(retrievedTx => {
+        tx = retrievedTx
+        console.log('Asset Created: ' + retrievedTx.id);
+      })
+
+    return tx
+  }
+
   // Transfers a BigchainDB asset from an input transaction to a new public key
   async transferAsset(tx: any, fromKeyPair: Keypair, toPublicKey: string, metadata: Metadata) {
     await this._getConnection()

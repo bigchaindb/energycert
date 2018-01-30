@@ -17,6 +17,11 @@ body {
   text-align: right;
 }
 
+.centered {
+    float: none;
+    margin: 0 auto;
+}
+
 /*
 html, body, material-app, md-sidenav-container, .my-content {
   font-family: 'Roboto', sans-serif;

@@ -20,7 +20,7 @@ export class LoginComponent implements OnInit {
 
     let keypair = this.bdbService.getKeypairFromSeed(f.value.inputPassword+f.value.inputEmail)
 
-    sessionStorage.setItem('user', JSON.stringify({
+    localStorage.setItem('user', JSON.stringify({
       publicKey:keypair.publicKey,
       privateKey:keypair.privateKey
     }))
