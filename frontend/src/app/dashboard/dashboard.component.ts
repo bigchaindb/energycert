@@ -27,7 +27,7 @@ export class DashboardComponent implements OnInit {
   openMakeOffer(user) {
 
   let modalRef = this.modalService.open(MakeOfferComponent);
-  modalRef.componentInstance.offeredUser = { name: user.metadata.name, public_key: user.outputs[0].public_keys };
+  modalRef.componentInstance.offeredUser = { name: user.metadata.name, public_key: user.outputs[0].public_keys[0] };
 }
 
 }

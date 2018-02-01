@@ -89,7 +89,7 @@ else {
             app.use('/api/v1/objects', ObjectsRouter_1.default);
             app.use('/api/v1/users', UsersRouter_1.default);
             // listen
-            var server = app.listen(3000);
+            var server = app.listen(4000);
             break;
     }
 }

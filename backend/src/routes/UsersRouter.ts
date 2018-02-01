@@ -18,11 +18,13 @@ export class UsersRouter {
         call xtech API: POST /getwallet
     */
     getAmount(req: Request, res: Response, next: NextFunction) {
-
+      res.send({test:'test'})
+      /*
         // call xtech API: POST /getwallet
        xtechAPI.getAmount(req.body.uuid, function(results){
           return res.send({ 'amount': results });
-          });
+        });
+      */
     }
 
     /**
@@ -52,7 +54,7 @@ export class UsersRouter {
      * endpoints.
      */
     init() {
-        this.router.post('/amount', this.getAmount);
+        this.router.get('/amount', this.getAmount);
         this.router.post('/transfer', this.transfer);
         this.router.post('/addWallet', this.addWallet);
     }

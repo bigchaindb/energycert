@@ -33,10 +33,10 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>Name1</td>
-                            <td>9991</td>
-                            <td>125$</td>
+                        <tr *ngFor="let offer of myOffers">
+                          <td>{{offer.name}}</td>
+                          <td>{{offer.offered_tokens}}</td>
+                          <td>{{offer.offered_money}}</td>
                             <td>
                                 <button class="btn btn-outline-primary">Cancel</button>
                             </td>
@@ -60,10 +60,10 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>Name1</td>
-                            <td>99</td>
-                            <td>129$</td>
+                        <tr *ngFor="let offer of recivingOffers">
+                            <td>{{offer.name}}</td>
+                            <td>{{offer.offered_tokens}}</td>
+                            <td>{{offer.offered_money}}</td>
                             <td>
                                 <button class="btn btn-outline-primary">Accept</button>
                             </td>

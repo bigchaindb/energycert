@@ -34,6 +34,7 @@ export class MakeOfferComponent {
       data:'OfferAsset',
       timestamp: Date.now(),
       receiver_public_key: this.offeredUser.public_key,
+      sender_public_key: keypair.publicKey,
       offered_money: f.value.inputMoney,
       offered_tokens:f.value.inputTokens
     }

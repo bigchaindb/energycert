@@ -41,6 +41,19 @@ export class BdbService {
     }
   }
 
+  // gets a transaction based on id
+  async getProfileFromPublickey(publicKey: string) {
+    await this._getConnection()
+    var profile
+    var results = await this.getAssetsInWallet(publicKey, false)
+    for (const res of results) {
+      if (res.asset.data.data === "UserAsset") {
+        profile = res.metadata
+      }
+    }
+    return profile
+  }
+
   // searches assets in BDB based on a text input
   async searchTypeInstances(text: string, link: string) {
     await this._getConnection()
@@ -54,6 +67,31 @@ export class BdbService {
     }
 
     return txList
+  }
+
+  // searches assets in BDB based on a text input
+  async searchAssetsGetFull(text: string) {
+    await this._getConnection()
+    const txList = []
+    const assetList = await this.conn.searchAssets(text)
+    for (const asset of assetList) {
+        const tx = await this.getFullAssetAndMetadata(asset.id)
+        txList.push(tx)
+    }
+    return txList
+  }
+
+  // returns full transaction with updates
+  async getFullAssetAndMetadata(assetId: string) {
+    await this._getConnection()
+    const createTx = await this.getTransaction(assetId)
+    const transfersTx = await this.getTransferTransactionsForAsset(assetId)
+    const arr = []
+    arr.push(createTx)
+    for (const trtx of transfersTx) {
+      arr.push(trtx)
+    }
+    return arr
   }
 
   // get all users
@@ -80,6 +118,31 @@ export class BdbService {
       }
     }
 
+    return txList
+  }
+
+  // searches assets in BDB based on a text input
+  async searchAssets(text: string) {
+    await this._getConnection()
+    const txList = []
+    const assetList = await this.conn.searchAssets(text)
+    console.log(assetList)
+    for (const asset of assetList) {
+        const tx = await this.conn.getTransaction(asset.id)
+        txList.push(tx)
+    }
+    return txList
+  }
+
+  // searches metadata in BDB based on a text input
+  async searchMetadata(text: string) {
+    await this._getConnection()
+    const txList = []
+    const assetList = await this.conn.searchMetadata(text)
+    for (const asset of assetList) {
+        const tx = await this.conn.getTransaction(asset.id)
+        txList.push(tx)
+    }
     return txList
   }
 
@@ -117,7 +180,6 @@ export class BdbService {
       }
     }
 
-    console.log(assets)
     return assets
   }
 
