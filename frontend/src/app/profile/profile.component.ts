@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core'
 import { BdbService } from '../shared/bdb.service'
+import { XtechService } from '../shared/xtech.service'
 
 @Component({
   selector: 'app-profile',
@@ -11,8 +12,9 @@ export class ProfileComponent implements OnInit {
   userProfile :any = {};
   myOffers = [];
   recivingOffers = [];
+  xtechWallet = undefined;
 
-  constructor(private bdbService: BdbService) { }
+  constructor(private bdbService: BdbService, private xtechService: XtechService) { }
 
   ngOnInit() {
     this.init();
@@ -52,7 +54,7 @@ export class ProfileComponent implements OnInit {
           // get user asset name
           this.bdbService.getProfileFromPublickey(result[0].asset.data.sender_public_key).then((profile)=>{
             this.recivingOffers.push({
-              asset_id: result[0].asset.id,
+              asset_id: result[0].id,
               name: profile.name,
               offered_tokens: result[0].asset.data.offered_tokens,
               offered_money: result[0].asset.data.offered_money
@@ -65,7 +67,7 @@ export class ProfileComponent implements OnInit {
           // get user asset name
           this.bdbService.getProfileFromPublickey(result[0].asset.data.receiver_public_key).then((profile)=>{
             this.myOffers.push({
-              asset_id: result[0].asset.id,
+              asset_id: result[0].id,
               name: profile.name,
               offered_tokens: result[0].asset.data.offered_tokens,
               offered_money: result[0].asset.data.offered_money
@@ -74,7 +76,38 @@ export class ProfileComponent implements OnInit {
         }
       }
     });
+    // get wallet amount
+    this.xtechService.getUsersAmount().subscribe(
+      result => { this.xtechWallet = result.json().amount },
+    )
+  }
+
+  accept(asset_id) {
+    let config = JSON.parse(localStorage.getItem('config'))
+    let keypair = JSON.parse(localStorage.getItem('user'))
+    let asset = {
+      data:'AcceptAsset',
+      timestamp: Date.now(),
+      asset_id: asset_id
+    }
+    let metadata = null
+    this.bdbService.createNewAssetWithOwner(keypair ,config.xtechpubkey, asset, metadata).then((result)=>{
+      this.init()
+    })
   }
 
 
+  cancel(asset_id) {
+    let config = JSON.parse(localStorage.getItem('config'))
+    let keypair = JSON.parse(localStorage.getItem('user'))
+    let asset = {
+      data:'CancelAsset',
+      timestamp: Date.now(),
+      asset_id: asset_id
+    }
+    let metadata = null
+    this.bdbService.createNewAssetWithOwner(keypair ,config.xtechpubkey, asset, metadata).then((result)=>{
+      this.init()
+    })
+  }
 }

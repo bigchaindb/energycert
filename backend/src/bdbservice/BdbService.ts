@@ -124,8 +124,6 @@ export async function getAssetHistory(assetId: string) {
     for (const trtx of transferTx) {
         metadataArr.push(trtx.metadata)
     }
-
-    metadataArr.sort((a, b) => b.timestamp - a.timestamp)
     return metadataArr
 }
 
@@ -182,6 +180,59 @@ export async function transferAsset(tx: any, fromKeyPair, toPublicKey, metadata)
         })
 
     return trTx
+}
+
+export async function getSortedTransactions(assetId) {
+    return this.conn.listTransactions(assetId)
+        .then((txList) => {
+            if (txList.length <= 1) {
+                return txList
+            }
+            const inputTransactions = []
+            txList.forEach((tx) =>
+                tx.inputs.forEach(input => {
+                    if (input.fulfills) {
+                        inputTransactions.push(input.fulfills.transaction_id)
+                    }
+                })
+            )
+            const unspents = txList.filter((tx) => inputTransactions.indexOf(tx.id) === -1)
+            if (unspents.length) {
+                let tipTransaction = unspents[0]
+                let tipTransactionId = tipTransaction.inputs[0].fulfills.transaction_id
+                const sortedTxList = []
+                while (true) { // eslint-disable-line no-constant-condition
+                    sortedTxList.push(tipTransaction)
+                    try {
+                        tipTransactionId = tipTransaction.inputs[0].fulfills.transaction_id
+                    } catch (e) {
+                        break
+                    }
+                    if (!tipTransactionId) {
+                        break
+                    }
+                    tipTransaction = txList.filter((tx) => // eslint-disable-line no-loop-func
+                        tx.id === tipTransactionId)[0]
+                }
+                return sortedTxList.reverse()
+            } else {
+                console.error('something went wrong while sorting transactions',
+                    txList, inputTransactions)
+            }
+            return txList
+        })
+}
+
+// transaction sent to xtech
+export function sentToXtech(transaction) {
+  if (
+    transaction.outputs[0].public_keys.length !== 1 ||
+    transaction.outputs[0].public_keys[0] !== config.xtech_keypair.publicKey
+  ) {
+    return false
+  } else {
+    return true
+  }
 }
 
 // private: creates a connection to BDB server

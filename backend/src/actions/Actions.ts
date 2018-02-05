@@ -1,5 +1,11 @@
 import * as http from 'http';
-import { getTransaction, transferAsset, getAssetHistory } from '../bdbservice/BdbService'
+import {
+  getSortedTransactions,
+  sentToXtech,
+  getTransaction,
+  transferAsset,
+  getAssetHistory
+} from '../bdbservice/BdbService';
 import * as xtechAPI from '../XtechService/xtechservice';
 
 import * as debug from 'debug';
@@ -27,10 +33,10 @@ export function handleAction(inputData) {
           handleOfferAsset(transaction)
           break
         case "AcceptAsset":
-          handleOfferAsset(transaction)
+          handleAcceptAsset(transaction)
           break
         case "CancelAsset":
-          handleOfferAsset(transaction)
+          handleCancelAsset(transaction)
           break
       }
     }
@@ -86,7 +92,7 @@ function handleOfferAsset(transaction) {
     return
   }
   // sent to xtech?
-  if (transaction.outputs[0].public_keys.length !== 1 || transaction.outputs[0].public_keys[0] !== config.xtech_keypair.publicKey) {
+  if (sentToXtech(transaction) === false) {
     log('offerAsset owner error')
     return
   }
@@ -116,63 +122,83 @@ function handleCancelAsset(transaction) {
   // input checks
   if (
     transaction.asset.data.timestamp === undefined ||
-    transaction.asset.data.offertxid === undefined
+    transaction.asset.data.asset_id === undefined
   ){
     log('cancelAsset missing parameters')
     return
   }
   // sent to xtech?
-  if (transaction.outputs[0].public_keys.length !== 1 || transaction.outputs[0].public_keys[0] !== config.xtech_keypair.publicKey) {
-    log('offerAsset owner error')
+  if (sentToXtech(transaction) === false) {
+    log('cancelAsset owner error')
     return
   }
-
-  // get transaction txid
-  // check for state of transaction
-  log("history")
-  getAssetHistory(transaction.asset.data.offertxid).then((txList)=>{
-    log(txList)
+  // offerAsset creator with create asset ownership of acceptAsset
+  getSortedTransactions(transaction.asset.data.asset_id).then((txs)=>{
+    // valid offer & receiver is the same as offer accepter
+    if (
+      transaction.inputs[0].owners_before[0] === txs[0].asset.data.receiver_public_key &&
+      txs[0].asset.data.data === 'OfferAsset' &&
+      txs[0].operation === 'CREATE' &&
+      txs[1].metadata.allocation === 'allocated' &&
+      txs.length < 3
+    ) {
+      // TODO: return money to sender
+      transferAsset(txs[1], config.xtech_keypair, config.xtech_keypair.publicKey, {cancel:"canceled"}).then(()=>{
+        log('offerAsset cancel updated')
+      })
+    } else {
+      log('cancelAsset not receiver')
+    }
   })
-  /*
-  // money from escrow back to owner
-  // money from escrow to new account
- let parameters =
- {
-    to_wallet : "4ca00f34-1486-4375-b30b-cbc1e939f51b",
-    from_wallet : "51287e29-5601-454f-a0c5-0b542e868af1",
-    order_id : 1,
-    amount:  2
- }
-  // call xtech API: POST /getwallet
-  xtechAPI.transfer(parameters, function(results){
-    return results;
-  });
-  */
 }
 
 function handleAcceptAsset(transaction) {
-  // checks
-  /*
-  getAssetHistory(transaction.id).then((txList)=>{
-    console.log(txList)
+  // input checks
+  if (
+    transaction.asset.data.timestamp === undefined ||
+    transaction.asset.data.asset_id === undefined
+  ){
+    log('acceptAsset missing parameters')
+    return
+  }
+  // sent to xtech?
+  if (sentToXtech(transaction) === false) {
+    log('acceptAsset owner error')
+    return
+  }
+  // offerAsset creator with create asset ownership of acceptAsset
+  getSortedTransactions(transaction.asset.data.asset_id).then((txs)=>{
+    // valid offer & receiver is the same as offer accepter
+    if (
+      transaction.inputs[0].owners_before[0] === txs[0].asset.data.receiver_public_key &&
+      txs[0].asset.data.data === 'OfferAsset' &&
+      txs[0].operation === 'CREATE' &&
+      txs[1].metadata.allocation === 'allocated' &&
+      txs.length < 3
+    ) {
+      transferAsset(txs[1], config.xtech_keypair, config.xtech_keypair.publicKey, {accepted:"accepted"}).then(()=>{
+        log('offerAsset accepted updated')
+      })
+    } else {
+      log('acceptAsset not receiver')
+    }
   })
-  */
-  // update status
 }
 
 function handleTokenTransfer(transaction) {
   // checks
-
+  /*
   // money from escrow to new account
- let parameters =
- {
-    to_wallet : "4ca00f34-1486-4375-b30b-cbc1e939f51b",
-    from_wallet : "51287e29-5601-454f-a0c5-0b542e868af1",
-    order_id : 1,
-    amount:  2
- }
+   let parameters =
+   {
+      to_wallet : "4ca00f34-1486-4375-b30b-cbc1e939f51b",
+      from_wallet : "51287e29-5601-454f-a0c5-0b542e868af1",
+      order_id : 1,
+      amount:  2
+   }
   // call xtech API: POST /getwallet
   xtechAPI.transfer(parameters, function(results){
     return results;
     });
+  */
 }

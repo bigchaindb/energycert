@@ -8,7 +8,7 @@ import { Http, Response, RequestOptions, Headers } from '@angular/http';
 export class XtechService {
 
   apiRoot: string  = "https://wallet.staging.payxapi.com/apiv2/wallet/";
-  backendURL: string = "http://localhost:3000/api/v1/users";
+  backendURL: string = "http://localhost:4000/api/v1/users";
 
 
   userProfile: any = {};
@@ -59,13 +59,8 @@ export class XtechService {
 
   getUsersAmount(userId : string = "51287e29-5601-454f-a0c5-0b542e868af1")
   {
-      // call POST /getwallet in the backend
-
-      //redirect to backend
-      this.http.post(this.backendURL+"/amount", {uuid: userId}) //TODO add wallet_uuid
-      .subscribe(
-        res => { console.log("Balance of "+ userId + " :",res.json().amount);},
-        error => { console.log("Error Message: " + error)});
+    // call POST /getwallet in the backend
+    return this.http.post(this.backendURL+"/amount", {uuid: userId})
   }
 
   test() {

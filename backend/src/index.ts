@@ -44,7 +44,7 @@ if (cluster.isMaster) {
                 spawnListenerService();
             });
         }
-        listenerService = spawnListenerService()
+        spawnListenerService()
 
         // spawn rest api
         var restService
@@ -59,7 +59,7 @@ if (cluster.isMaster) {
                 spawnRestService();
             });
         }
-        restService = spawnRestService()
+        spawnRestService()
 
     });
 

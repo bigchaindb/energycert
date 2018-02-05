@@ -13,16 +13,9 @@ export class MakeOfferComponent {
 
     showDone = false;
 
-  constructor(public activeModal: NgbActiveModal,private bdbService: BdbService) {
-    //TODO GET Public Key
+  constructor(public activeModal: NgbActiveModal,private bdbService: BdbService) {}
 
-  }
-
-  ngOnInit()
-  {
-
-  }
-
+  ngOnInit(){}
 
   onSubmit(f){
     //hide offer interface and show done

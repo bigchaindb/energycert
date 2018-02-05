@@ -4,15 +4,10 @@
             <h1>Profile</h1>
             <div class="card">
               <div class="card-body">
-                <!--
-                <h5 class="card-title">Special title treatment</h5>
-                <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
-                -->
                 <div>User name: {{userProfile.username}}</div>
                 <div>Email: {{userProfile.email}}</div>
                 <div>Public key: {{userProfile.public_key }}</div>
-                <div>Amount: XXX$</div>
+                <div>Amount: {{xtechWallet}}</div>
                 <div>REC: XX</div>
               </div>
             </div>
@@ -38,7 +33,7 @@
                           <td>{{offer.offered_tokens}}</td>
                           <td>{{offer.offered_money}}</td>
                             <td>
-                                <button class="btn btn-outline-primary">Cancel</button>
+                                <button (click)="cancel(offer.asset_id)" class="btn btn-outline-primary">Cancel</button>
                             </td>
                         </tr>
                     </tbody>
@@ -65,7 +60,7 @@
                             <td>{{offer.offered_tokens}}</td>
                             <td>{{offer.offered_money}}</td>
                             <td>
-                                <button class="btn btn-outline-primary">Accept</button>
+                                <button (click)="accept(offer.asset_id)" class="btn btn-outline-primary">Accept</button>
                             </td>
                         </tr>
                     </tbody>
