@@ -14,7 +14,7 @@ import DifferentRouter from './routes/DifferentRouter';
 import UsersRouter from './routes/UsersRouter';
 
 // actions
-import { handleAction } from './actions/Actions';
+import { handleAction, initializeDemo } from './actions/Actions';
 
 // config
 const config = require('./config/config');
@@ -71,6 +71,10 @@ if (cluster.isMaster) {
           log('starting blockchain listener')
           const ws = new WebSocket(config.ws_url, {origin: 'http://localhost:9984'});
           ws.on('open', function open() {
+            // check for initialize
+            if(config.init.initialize){
+              initializeDemo()
+            }
             //console.log('connected');
           });
           ws.on('close', function close() {

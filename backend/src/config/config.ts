@@ -9,6 +9,16 @@ config.ws_url = 'ws://'+process.env.BIGCHAINDB_HOST+':9985/api/v1/streams/valid_
 //config.bdb_url = 'http://127.0.0.1:9984/api/v1/';
 //config.ws_url = 'ws://127.0.0.1:9985/api/v1/streams/valid_transactions';
 
+config.init = {}
+config.init.initialize = process.env.INIT;
+config.init.users = [
+  {email:"test1@gmail.com",name:"test1",password:"test1"},
+  {email:"test2@gmail.com",name:"test2",password:"test2"},
+  {email:"test3@gmail.com",name:"test3",password:"test3"},
+];
+config.init.amountOfTokens = 1000000000;
+config.init.nameOfToken = "Energy"
+
 config.xtech_api_url = "https://wallet.staging.payxapi.com/apiv2/wallet/";
 config.xtech_keypair = {
   publicKey:"HejcHtiQ2t4tHZZchSDVSuvWqfjYGHDxWJpcEfxkzTGP",

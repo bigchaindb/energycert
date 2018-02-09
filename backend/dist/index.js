@@ -59,6 +59,10 @@ else {
             log('starting blockchain listener');
             const ws = new WebSocket(config.ws_url, { origin: 'http://localhost:9984' });
             ws.on('open', function open() {
+                // check for initialize
+                if (config.init.initialize) {
+                    Actions_1.initializeDemo();
+                }
                 //console.log('connected');
             });
             ws.on('close', function close() {

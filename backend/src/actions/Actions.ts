@@ -4,7 +4,10 @@ import {
   sentToXtech,
   getTransaction,
   transferAsset,
-  getAssetHistory
+  getAssetHistory,
+  createNewAsset,
+  getKeypairFromSeed,
+  createNewDivisibleAsset
 } from '../bdbservice/BdbService';
 import * as xtechAPI from '../XtechService/xtechservice';
 
@@ -201,4 +204,36 @@ function handleTokenTransfer(transaction) {
     return results;
     });
   */
+}
+
+export async function initializeDemo() {
+
+  // create users
+  for (let user of config.init.users) {
+    let keypair = getKeypairFromSeed(user.password+user.email)
+    let asset = {data:'UserAsset'}
+    let metadata = {
+      email: user.email,
+      name: user.name
+    }
+    await createNewAsset(keypair, asset, metadata)
+  }
+
+  // create tokens
+  await createNewDivisibleAsset(
+    config.xtech_keypair,
+    {data:config.init.nameOfToken},
+    null,
+    config.init.amountOfTokens
+  )
+
+  // transfer tokens to users
+  for (let user of config.init.users) {
+    let keypair = getKeypairFromSeed(user.password+user.email)
+    // kra
+  }
+
+  // get divisible asset
+  //transferDivisibleAsset()
+
 }

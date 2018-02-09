@@ -106,7 +106,6 @@ export async function getAssetsInWallet(publicKey: string, spent: boolean) {
         }
     }
 
-    console.log(assets)
     return assets
 }
 
@@ -148,7 +147,32 @@ export async function createNewAsset(keypair, asset, metadata) {
         .then(() => this.conn.pollStatusAndFetchTransaction(txSigned.id))
         .then(retrievedTx => {
             tx = retrievedTx
-            console.log('Asset Created: ' + retrievedTx.id);
+        })
+
+    return tx
+}
+
+// Creates a new divisible asset in BigchainDB
+export async function createNewDivisibleAsset(keypair, asset, metadata, amount) {
+    await this._getConnection()
+    const condition = driver.Transaction.makeEd25519Condition(keypair.publicKey, true)
+
+    const output = driver.Transaction.makeOutput(condition, amount.toString())
+    output.public_keys = [keypair.publicKey]
+
+    const transaction = driver.Transaction.makeCreateTransaction(
+        asset,
+        metadata,
+        [output],
+        keypair.publicKey
+    )
+
+    const txSigned = driver.Transaction.signTransaction(transaction, keypair.privateKey)
+    let tx
+    await this.conn.postTransaction(txSigned)
+        .then(() => this.conn.pollStatusAndFetchTransaction(txSigned.id))
+        .then(retrievedTx => {
+            tx = retrievedTx
         })
 
     return tx
@@ -158,17 +182,11 @@ export async function createNewAsset(keypair, asset, metadata) {
 export async function transferAsset(tx: any, fromKeyPair, toPublicKey, metadata) {
     await this._getConnection()
 
-    const condition = driver.Transaction.makeEd25519Condition(toPublicKey)
-
-    const output = driver.Transaction.makeOutput(condition)
-    output.public_keys = [toPublicKey]
-
     const txTransfer = driver.Transaction.makeTransferTransaction(
-        tx,
-        metadata,
-        [output],
-        0
-    )
+        [{ tx: tx, output_index: 0 }],
+        [driver.Transaction.makeOutput(driver.Transaction.makeEd25519Condition(toPublicKey))],
+        metadata
+    );
 
     const txSigned = driver.Transaction.signTransaction(txTransfer, fromKeyPair.privateKey)
     let trTx
@@ -176,7 +194,32 @@ export async function transferAsset(tx: any, fromKeyPair, toPublicKey, metadata)
         .then(() => this.conn.pollStatusAndFetchTransaction(txSigned.id))
         .then(retrievedTx => {
             trTx = retrievedTx
-            console.log('Asset Transferred: ' + retrievedTx.id);
+        })
+
+    return trTx
+}
+
+export async function transferDivisibleAsset(tx: any, fromKeyPair, toPublicKeysAmounts, metadata) {
+    await this._getConnection()
+
+    let receivers = []
+    for (let entry of toPublicKeysAmounts) {
+        let output = driver.Transaction.makeOutput(driver.Transaction.makeEd25519Condition(entry.publicKey), entry.amount.toString())
+        receivers.push(output)
+    }
+
+    const txTransfer = driver.Transaction.makeTransferTransaction(
+        [{ tx: tx, output_index: 0 }],
+        receivers,
+        null
+    );
+
+    const txSigned = driver.Transaction.signTransaction(txTransfer, fromKeyPair.privateKey)
+    let trTx
+    await this.conn.postTransaction(txSigned)
+        .then(() => this.conn.pollStatusAndFetchTransaction(txSigned.id))
+        .then(retrievedTx => {
+            trTx = retrievedTx
         })
 
     return trTx
