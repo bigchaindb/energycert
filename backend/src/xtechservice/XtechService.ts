@@ -1,5 +1,15 @@
 const config =  require('../config/config');
+
 import * as request from 'request';
+var rp = require('request-promise');
+
+var options = {
+    method: 'POST',
+    uri: config.xtech_api_url,
+    simple: false,
+    body: {},
+    json: true
+};
 
 
 /**
@@ -10,18 +20,12 @@ import * as request from 'request';
   ### required parameters ###
   uuid      String
 */
-export async function getAmount(uniqueUserID: string, callback) {
+export async function getAmount(uniqueUserID: string) {
+
     // POST /getwallet
-    request.post(
-      config.xtech_api_url+'/getwallet',
-      { json: { uuid: uniqueUserID } },
-      function (error, response, body) {
-          if (!error && response.statusCode == 200) {
-              console.log(body)
-          }
-           callback(body.data[0].total_balance);
-      }
-  );
+    options.uri += '/getwallet';
+    options.body = { uuid: uniqueUserID }
+    return rp(options)
 }
 
 
@@ -43,27 +47,21 @@ export async function getAmount(uniqueUserID: string, callback) {
    flag_expires timestamp
    fee          Integer
  */
-export async function transfer(parameters : any, callback){
+export async function transfer(parameters : any){
 
     let from_wallet :string = parameters.from_wallet;
     let to_wallet :string = parameters.to_wallet;
     let order_id: number = parameters.order_id;
     let amount: number = parameters.amount;
 
-    // POST /transfer
-    request.post(
-          config.xtech_api_url+'/transfer',
-        { json: { from_wallet: from_wallet,
-                  to_wallet: to_wallet,
-                  order_id: order_id,
-                  amount: amount } },
-        function (error, response, body) {
-            if (!error && response.statusCode == 200) {
-                console.log(body)
-            }
-            callback(body);
-        }
-    );
+    //POST /transfer
+    options.uri += '/transfer';
+    options.body = {
+                      from_wallet: from_wallet,
+                      to_wallet: to_wallet,
+                      order_id: order_id,
+                      amount: amount }
+    return rp(options)
 }
 
 /**
@@ -78,17 +76,12 @@ export async function transfer(parameters : any, callback){
                       deleted,
                       supply_wallet
 */
-export async function addWallet(uniqueUserID: string, walletState: string ,callback) {
+export async function addWallet(uniqueUserID: string, walletState: string) {
 
     // POST addWallet
-    request.post(
-        config.xtech_api_url+'/addWallet',
-        { json: { user_id: uniqueUserID,  state: walletState} },
-        function (error, response, body) {
-            if (!error && response.statusCode == 200) {
-                console.log(body)
-            }
-            callback(body);
-        }
-    );
+  options.uri += '/addwallet';
+  options.body = {
+                    user_id: uniqueUserID,
+                    state: walletState }
+  return rp(options)
 }

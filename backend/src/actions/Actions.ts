@@ -66,12 +66,13 @@ function handleUserAsset(transaction) {
   }
 
   // TODO create user on xtech
-  // xtechAPI.addWallet(transaction.inputs[0].owners_before[0], 'active', function(result){
+  // xtechAPI.addWallet(transaction.inputs[0].owners_before[0], 'active')
+  //.then((result) => {
     // if success:
     models.users.create({
         email: transaction.metadata.email,
         name: transaction.metadata.name,
-        userid: uuidV4(), // TODO: GET THIS FROM XTECH
+        userid: uuidV4(), // TODO result.data[0].uuid
         publickey: transaction.inputs[0].owners_before[0]
     }).then((user) => {
         log('user saved!')
@@ -109,12 +110,13 @@ function handleOfferAsset(transaction) {
   //   amount:  2
   // }
   // call xtech API: POST /getwallet
-  // xtechAPI.transfer(parameters, function(results){
+  // xtechAPI.transfer(parameters)
+  //.then((result) => {
     // if success
       transferAsset(transaction, config.xtech_keypair, config.xtech_keypair.publicKey, {allocation:"allocated"}).then((tx)=>{
         log('offerAsset allocated updated')
       })
-    // else
+    // else  //.catch((err) => {
       // transferAsset(transaction, config.xtech_keypair, config.xtech_keypair.publicKey, {allocation:'failed'}).then((tx)=>{
       //   log('offerAsset failed updated')
       // })
@@ -194,8 +196,8 @@ function handleTokenTransfer(transaction) {
   // money from escrow to new account
    let parameters =
    {
-      to_wallet : "4ca00f34-1486-4375-b30b-cbc1e939f51b",
-      from_wallet : "51287e29-5601-454f-a0c5-0b542e868af1",
+      to_wallet : "51287e29-5601-454f-a0c5-0b542e868af1",
+      from_wallet : config.xtech_escrow_wallet,
       order_id : 1,
       amount:  2
    }
