@@ -14,6 +14,7 @@ config.xtech_keypair = {
   publicKey:"HejcHtiQ2t4tHZZchSDVSuvWqfjYGHDxWJpcEfxkzTGP",
   privateKey:"FGqyZKhv7yR3bP8RSn7BwAmLqLGsMkr25m1byZtkboWH"
 };
+config.xtech_escrow_wallet = "2abfbf9d-a562-4b9c-ba79-3b79a74ccacc"
 
 config.db = {};
 config.db.host = process.env.MYSQL_HOST;

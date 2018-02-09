@@ -15,16 +15,16 @@ export class UsersRouter {
         this.init();
     }
     /**
-        call xtech API: POST /getwallet
+        call xtech API: POST /getwallet to get amount ´
     */
     getAmount(req: Request, res: Response, next: NextFunction) {
-      res.send({'amount': 100})
-      /*
+      
         // call xtech API: POST /getwallet
-       xtechAPI.getAmount(req.body.uuid, function(results){
-          return res.send({ 'amount': results });
-        });
-      */
+       xtechAPI.getAmount(req.body.uuid)
+       .then((result)=>{
+            return res.send({ 'amount': result.data[0].total_balance })})
+       .catch(function (err) {
+             return res.send({ 'error': err })})
     }
 
     /**
@@ -33,9 +33,11 @@ export class UsersRouter {
     transfer(req: Request, res: Response, next: NextFunction) {
 
         // call xtech API: POST /getwallet
-       xtechAPI.transfer(req.body, function(result){
-          return res.send({ 'result': result });
-          });
+       xtechAPI.transfer(req.body)
+       .then((result)=>{
+            return res.send({ 'result': result })})
+       .catch(function (err) {
+             return res.send({ 'error': err })})
     }
 
     /**
@@ -44,9 +46,11 @@ export class UsersRouter {
     addWallet(req: Request, res: Response, next: NextFunction) {
 
         // call xtech API: POST /getwallet
-       xtechAPI.addWallet(req.body.user_id, req.body.state, function(result){
-          return res.send({ 'result': result });
-          });
+      xtechAPI.addWallet(req.body.user_id, req.body.state)
+      .then((result)=>{
+           return res.send({ 'result': result })})
+      .catch(function (err) {
+            return res.send({ 'error': err })})
     }
 
     /**
