@@ -7,7 +7,8 @@ import {
   getAssetHistory,
   createNewAsset,
   getKeypairFromSeed,
-  createNewDivisibleAsset
+  createNewDivisibleAsset,
+  transferDivisibleAsset
 } from '../bdbservice/BdbService';
 import * as xtechAPI from '../XtechService/xtechservice';
 
@@ -222,20 +223,22 @@ export async function initializeDemo() {
   }
 
   // create tokens
-  await createNewDivisibleAsset(
+  let tokensTx = await createNewDivisibleAsset(
     config.xtech_keypair,
     {data:config.init.nameOfToken},
     null,
     config.init.amountOfTokens
   )
 
-  // transfer tokens to users
+  // transfer tokens to each users
+  let toPublicKeysAmounts = []
+  let avaliableAmount = config.init.amountOfTokens
+  let transferAmount = 100
   for (let user of config.init.users) {
     let keypair = getKeypairFromSeed(user.password+user.email)
-    // kra
+    toPublicKeysAmounts.push({publicKey:keypair.publicKey, amount:transferAmount})
+    avaliableAmount = avaliableAmount - transferAmount
   }
-
-  // get divisible asset
-  //transferDivisibleAsset()
-
+  toPublicKeysAmounts.push({publicKey:config.xtech_keypair.publicKey, amount:avaliableAmount})
+  transferDivisibleAsset(tokensTx, config.xtech_keypair, toPublicKeysAmounts, null)
 }

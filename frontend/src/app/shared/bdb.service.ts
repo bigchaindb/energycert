@@ -175,7 +175,8 @@ export class BdbService {
         assets.push({
           'id': crTx.id,
           'asset': crTx.asset,
-          'metadata': crTx.metadata
+          'metadata': crTx.metadata,
+          'unspentTx': tx
         })
       }
     }

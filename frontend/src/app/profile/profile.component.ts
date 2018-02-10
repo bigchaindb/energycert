@@ -9,10 +9,11 @@ import { XtechService } from '../shared/xtech.service'
 })
 export class ProfileComponent implements OnInit {
 
-  userProfile :any = {};
-  myOffers = [];
-  recivingOffers = [];
-  xtechWallet = undefined;
+  userProfile :any = {}
+  myOffers = []
+  recivingOffers = []
+  xtechWallet = undefined
+  tokens = 0
 
   constructor(private bdbService: BdbService, private xtechService: XtechService) { }
 
@@ -27,8 +28,14 @@ export class ProfileComponent implements OnInit {
     this.bdbService.getAssetsInWallet(keypair.publicKey, false).then((res) => {
         res.forEach((currentAsset, index)=>{
           switch(currentAsset.asset.data.data){
-            case "TokenAsset":
-              // TODO: count tokens
+            case "Energy":
+              let amount = 0
+              for (let output of currentAsset.unspentTx.outputs) {
+                if (output.public_keys[0] === keypair.publicKey) {
+                  amount = amount + parseInt(output.amount)
+                }
+              }
+              this.tokens = amount
               break;
             case "UserAsset":
               this.userProfile.username = currentAsset.metadata.name

@@ -56,7 +56,8 @@ function handleUserAsset(transaction) {
         return;
     }
     // TODO create user on xtech
-    // xtechAPI.addWallet(transaction.inputs[0].owners_before[0], 'active', function(result){
+    // xtechAPI.addWallet(transaction.inputs[0].owners_before[0], 'active')
+    //.then((result) => {
     // if success:
     models.users.create({
         email: transaction.metadata.email,
@@ -95,12 +96,13 @@ function handleOfferAsset(transaction) {
     //   amount:  2
     // }
     // call xtech API: POST /getwallet
-    // xtechAPI.transfer(parameters, function(results){
+    // xtechAPI.transfer(parameters)
+    //.then((result) => {
     // if success
     BdbService_1.transferAsset(transaction, config.xtech_keypair, config.xtech_keypair.publicKey, { allocation: "allocated" }).then((tx) => {
         log('offerAsset allocated updated');
     });
-    // else
+    // else  //.catch((err) => {
     // transferAsset(transaction, config.xtech_keypair, config.xtech_keypair.publicKey, {allocation:'failed'}).then((tx)=>{
     //   log('offerAsset failed updated')
     // })
@@ -171,8 +173,8 @@ function handleTokenTransfer(transaction) {
     // money from escrow to new account
      let parameters =
      {
-        to_wallet : "4ca00f34-1486-4375-b30b-cbc1e939f51b",
-        from_wallet : "51287e29-5601-454f-a0c5-0b542e868af1",
+        to_wallet : "51287e29-5601-454f-a0c5-0b542e868af1",
+        from_wallet : config.xtech_escrow_wallet,
         order_id : 1,
         amount:  2
      }
@@ -195,14 +197,18 @@ function initializeDemo() {
             yield BdbService_1.createNewAsset(keypair, asset, metadata);
         }
         // create tokens
-        yield BdbService_1.createNewDivisibleAsset(config.xtech_keypair, { data: config.init.nameOfToken }, null, config.init.amountOfTokens);
-        // transfer tokens to users
+        let tokensTx = yield BdbService_1.createNewDivisibleAsset(config.xtech_keypair, { data: config.init.nameOfToken }, null, config.init.amountOfTokens);
+        // transfer tokens to each users
+        let toPublicKeysAmounts = [];
+        let avaliableAmount = config.init.amountOfTokens;
+        let transferAmount = 100;
         for (let user of config.init.users) {
             let keypair = BdbService_1.getKeypairFromSeed(user.password + user.email);
-            // kra
+            toPublicKeysAmounts.push({ publicKey: keypair.publicKey, amount: transferAmount });
+            avaliableAmount = avaliableAmount - transferAmount;
         }
-        // get divisible asset
-        //transferDivisibleAsset()
+        toPublicKeysAmounts.push({ publicKey: config.xtech_keypair.publicKey, amount: avaliableAmount });
+        BdbService_1.transferDivisibleAsset(tokensTx, config.xtech_keypair, toPublicKeysAmounts, null);
     });
 }
 exports.initializeDemo = initializeDemo;
