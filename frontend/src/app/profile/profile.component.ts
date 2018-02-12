@@ -46,10 +46,11 @@ export class ProfileComponent implements OnInit {
       for (const result of results) {
         if (
           result[0].asset.data.receiver_public_key === keypair.publicKey &&
-          result[1].metadata.allocation === "allocated" //&&
-          //result[1].owners_before[0] === config.xtechpubkey
+          result[1].metadata.allocation === "allocated" &&
+          result.length < 3
         ) {
           // get user asset name
+          console.log(result)
           this.bdbService.getProfileFromPublickey(result[0].asset.data.sender_public_key).then((profile)=>{
             this.recivingOffers.push({
               asset_id: result[0].id,
@@ -60,7 +61,8 @@ export class ProfileComponent implements OnInit {
           })
         }
         if (
-          result[0].asset.data.sender_public_key === keypair.publicKey
+          result[0].asset.data.sender_public_key === keypair.publicKey &&
+          result.length < 3
         ) {
           // get user asset name
           this.bdbService.getProfileFromPublickey(result[0].asset.data.receiver_public_key).then((profile)=>{
@@ -95,9 +97,7 @@ export class ProfileComponent implements OnInit {
     let metadata = null
     this.bdbService.createNewAssetWithOwner(keypair, config.xtechpubkey, asset, metadata).then((result)=>{
       // wait for confirmation
-
       // query if not repeat query
-
       // transfer tokens
       // wait for confirmation
       // this.init()

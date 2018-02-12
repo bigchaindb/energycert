@@ -123,7 +123,8 @@ function handleCancelAsset(transaction) {
     // offerAsset creator with create asset ownership of acceptAsset
     BdbService_1.getSortedTransactions(transaction.asset.data.asset_id).then((txs) => {
         // valid offer & receiver is the same as offer accepter
-        if (transaction.inputs[0].owners_before[0] === txs[0].asset.data.receiver_public_key &&
+        if ((transaction.inputs[0].owners_before[0] === txs[0].asset.data.receiver_public_key ||
+            transaction.inputs[0].owners_before[0] === txs[0].asset.data.sender_public_key) &&
             txs[0].asset.data.data === 'OfferAsset' &&
             txs[0].operation === 'CREATE' &&
             txs[1].metadata.allocation === 'allocated' &&
@@ -209,7 +210,8 @@ function initializeDemo() {
             avaliableAmount = avaliableAmount - transferAmount;
         }
         toPublicKeysAmounts.push({ publicKey: config.xtech_keypair.publicKey, amount: avaliableAmount });
-        BdbService_1.transferDivisibleAsset(tokensTx, config.xtech_keypair, toPublicKeysAmounts, null);
+        yield BdbService_1.transferDivisibleAsset(tokensTx, config.xtech_keypair, toPublicKeysAmounts, null);
+        process.exit();
     });
 }
 exports.initializeDemo = initializeDemo;

@@ -23,34 +23,40 @@ const log = debug('server:master');
 if (cluster.isMaster) {
     // mysql db init
     models.sequelize.sync().then(function () {
-        // spawn blockchain listener
-        var listenerService;
-        var spawnListenerService = function () {
-            // set service type
-            var worker_env = {};
-            worker_env["WORKER_TYPE"] = "listenerService";
-            listenerService = cluster.fork(worker_env);
-            // restart on kill
-            listenerService.on('exit', function (code, signal) {
-                log('respawning listener service');
-                spawnListenerService();
-            });
-        };
-        spawnListenerService();
-        // spawn rest api
-        var restService;
-        var spawnRestService = function () {
-            // set service type
-            var worker_env = {};
-            worker_env["WORKER_TYPE"] = "restService";
-            restService = cluster.fork(worker_env);
-            // restart on kill
-            restService.on('exit', function (code, signal) {
-                log('respawning rest service');
-                spawnRestService();
-            });
-        };
-        spawnRestService();
+        // check for initialize
+        if (config.init.initialize) {
+            Actions_1.initializeDemo();
+        }
+        else {
+            // spawn blockchain listener
+            var listenerService;
+            var spawnListenerService = function () {
+                // set service type
+                var worker_env = {};
+                worker_env["WORKER_TYPE"] = "listenerService";
+                listenerService = cluster.fork(worker_env);
+                // restart on kill
+                listenerService.on('exit', function (code, signal) {
+                    log('respawning listener service');
+                    spawnListenerService();
+                });
+            };
+            spawnListenerService();
+            // spawn rest api
+            var restService;
+            var spawnRestService = function () {
+                // set service type
+                var worker_env = {};
+                worker_env["WORKER_TYPE"] = "restService";
+                restService = cluster.fork(worker_env);
+                // restart on kill
+                restService.on('exit', function (code, signal) {
+                    log('respawning rest service');
+                    spawnRestService();
+                });
+            };
+            spawnRestService();
+        }
     });
 }
 else {
@@ -59,10 +65,6 @@ else {
             log('starting blockchain listener');
             const ws = new WebSocket(config.ws_url, { origin: 'http://localhost:9984' });
             ws.on('open', function open() {
-                // check for initialize
-                if (config.init.initialize) {
-                    Actions_1.initializeDemo();
-                }
                 //console.log('connected');
             });
             ws.on('close', function close() {
