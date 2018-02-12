@@ -12,10 +12,6 @@ import {
 } from '../bdbservice/BdbService';
 import * as xtechAPI from '../XtechService/xtechservice';
 
-import * as debug from 'debug';
-
-import * as uuidV4 from "uuid/v4"
-
 // config
 const config = require('../config/config');
 
@@ -70,7 +66,7 @@ function handleUserAsset(transaction) {
     models.users.create({
         email: transaction.metadata.email,
         name: transaction.metadata.name,
-        userid: result.data[0].uuid,
+        userwallet: result.data[0].uuid,
         publickey: transaction.inputs[0].owners_before[0]
     }).then((user) => {
         console.log('user saved!')
@@ -98,27 +94,40 @@ function handleOfferAsset(transaction) {
     console.log('offerAsset owner error')
     return
   }
+  // fake sent
+  if (transaction.asset.data.sender_public_key !== transaction.inputs[0].owners_before[0]) {
+    console.log('offerAsset owner != sender')
+    return
+  }
 
-  // TODO: transfer between wallets
-  // let parameters =
-  // {
-  //   to_wallet : "4ca00f34-1486-4375-b30b-cbc1e939f51b",
-  //   from_wallet : "51287e29-5601-454f-a0c5-0b542e868af1",
-  //   order_id : 1,
-  //   amount:  2
-  // }
-  // call xtech API: POST /getwallet
-  // xtechAPI.transfer(parameters)
-  //.then((result) => {
-    // if success
-      transferAsset(transaction, config.xtech_keypair, config.xtech_keypair.publicKey, {allocation:"allocated"}).then((tx)=>{
-        console.log('offerAsset allocated updated')
-      })
-    // else  //.catch((err) => {
-      // transferAsset(transaction, config.xtech_keypair, config.xtech_keypair.publicKey, {allocation:'failed'}).then((tx)=>{
-      //   log('offerAsset failed updated')
-      // })
-  // });
+  // get user wallet for publickey
+  models.users.findOne({where:{publickey:transaction.inputs[0].owners_before[0]}}).then((user)=>{
+    if(user){
+      let parameters = {
+        to_wallet: config.xtech_escrow_wallet,
+        from_wallet: user.userwallet,
+        order_id: transaction.id,
+        amount: transaction.asset.data.offered_money
+      }
+      // call xtech API: POST /getwallet
+      xtechAPI.transfer(parameters)
+      .then((result) => {
+        console.log(result)
+        /*
+        // if success
+          transferAsset(transaction, config.xtech_keypair, config.xtech_keypair.publicKey, {allocation:"allocated"}).then((tx)=>{
+            console.log('offerAsset allocated updated')
+          })
+        // else  //.catch((err) => {
+          // transferAsset(transaction, config.xtech_keypair, config.xtech_keypair.publicKey, {allocation:'failed'}).then((tx)=>{
+          //   log('offerAsset failed updated')
+          // })
+        */
+      });
+    } else {
+      console.log("user has no xtech wallet")
+    }
+  })
 }
 
 function handleCancelAsset(transaction) {
@@ -217,7 +226,7 @@ export async function initializeDemo() {
       email: user.email,
       name: user.name
     }
-    await createNewAsset(keypair, asset, metadata)
+    let newAsset = await createNewAsset(keypair, asset, metadata)
   }
 
   // create tokens
@@ -239,6 +248,6 @@ export async function initializeDemo() {
     avaliableAmount = avaliableAmount - transferAmount
   }
   toPublicKeysAmounts.push({publicKey:config.xtech_keypair.publicKey, amount:avaliableAmount})
-  await transferDivisibleAsset(tokensTx, config.xtech_keypair, toPublicKeysAmounts, null)
+  let tranfer = await transferDivisibleAsset(tokensTx, config.xtech_keypair, toPublicKeysAmounts, null)
   process.exit()
 }

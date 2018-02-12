@@ -3,7 +3,7 @@ import * as uuidV4 from "uuid/v4"
 
 module.exports = function(sequelize, DataTypes) {
   var users = sequelize.define("users", {
-    userid: {type:DataTypes.STRING, primaryKey:true},
+    userwallet: {type:DataTypes.STRING, primaryKey:true},
     publickey: DataTypes.STRING,
     name: DataTypes.STRING,
     email: DataTypes.STRING
