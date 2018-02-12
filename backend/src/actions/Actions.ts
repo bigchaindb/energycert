@@ -19,14 +19,10 @@ import * as uuidV4 from "uuid/v4"
 // config
 const config = require('../config/config');
 
-// debug
-const log = debug('server:listener:actions');
-
 // db models
 const models = require('../models');
 
 export function handleAction(inputData) {
-  console.log(inputData)
   getTransaction(inputData.transaction_id).then((transaction)=>{
     if (transaction.operation === "CREATE") {
       switch(transaction.asset.data.data) {
@@ -62,25 +58,26 @@ function handleUserAsset(transaction) {
     transaction.metadata.email === undefined ||
     transaction.metadata.name === undefined
   ){
-    log('userAsset missing parameters')
+    console.log('userAsset missing parameters')
     return
   }
 
-  // TODO create user on xtech
-  // xtechAPI.addWallet(transaction.inputs[0].owners_before[0], 'active')
-  //.then((result) => {
+  // create user on xtech
+  xtechAPI.addWallet(transaction.inputs[0].owners_before[0], 'active')
+  .then((result) => {
+    console.log(result)
     // if success:
     models.users.create({
         email: transaction.metadata.email,
         name: transaction.metadata.name,
-        userid: uuidV4(), // TODO result.data[0].uuid
+        userid: result.data[0].uuid,
         publickey: transaction.inputs[0].owners_before[0]
     }).then((user) => {
-        log('user saved!')
+        console.log('user saved!')
     }).catch((err) => {
-        log('userAsset db save error')
+        console.log('userAsset db save error')
     });
-  // });
+  });
 }
 
 function handleOfferAsset(transaction) {
@@ -93,12 +90,12 @@ function handleOfferAsset(transaction) {
     transaction.asset.data.offered_tokens === undefined ||
     transaction.metadata !== null
   ){
-    log('offerAsset missing parameters')
+    console.log('offerAsset missing parameters')
     return
   }
   // sent to xtech?
   if (sentToXtech(transaction) === false) {
-    log('offerAsset owner error')
+    console.log('offerAsset owner error')
     return
   }
 
@@ -115,7 +112,7 @@ function handleOfferAsset(transaction) {
   //.then((result) => {
     // if success
       transferAsset(transaction, config.xtech_keypair, config.xtech_keypair.publicKey, {allocation:"allocated"}).then((tx)=>{
-        log('offerAsset allocated updated')
+        console.log('offerAsset allocated updated')
       })
     // else  //.catch((err) => {
       // transferAsset(transaction, config.xtech_keypair, config.xtech_keypair.publicKey, {allocation:'failed'}).then((tx)=>{
@@ -130,12 +127,12 @@ function handleCancelAsset(transaction) {
     transaction.asset.data.timestamp === undefined ||
     transaction.asset.data.asset_id === undefined
   ){
-    log('cancelAsset missing parameters')
+    console.log('cancelAsset missing parameters')
     return
   }
   // sent to xtech?
   if (sentToXtech(transaction) === false) {
-    log('cancelAsset owner error')
+    console.log('cancelAsset owner error')
     return
   }
   // offerAsset creator with create asset ownership of acceptAsset
@@ -151,10 +148,10 @@ function handleCancelAsset(transaction) {
     ) {
       // TODO: return money to sender
       transferAsset(txs[1], config.xtech_keypair, config.xtech_keypair.publicKey, {cancel:"canceled"}).then(()=>{
-        log('offerAsset cancel updated')
+        console.log('offerAsset cancel updated')
       })
     } else {
-      log('cancelAsset not receiver')
+      console.log('cancelAsset not receiver')
     }
   })
 }
@@ -165,12 +162,12 @@ function handleAcceptAsset(transaction) {
     transaction.asset.data.timestamp === undefined ||
     transaction.asset.data.asset_id === undefined
   ){
-    log('acceptAsset missing parameters')
+    console.log('acceptAsset missing parameters')
     return
   }
   // sent to xtech?
   if (sentToXtech(transaction) === false) {
-    log('acceptAsset owner error')
+    console.log('acceptAsset owner error')
     return
   }
   // offerAsset creator with create asset ownership of acceptAsset
@@ -184,10 +181,10 @@ function handleAcceptAsset(transaction) {
       txs.length < 3
     ) {
       transferAsset(txs[1], config.xtech_keypair, config.xtech_keypair.publicKey, {accepted:"accepted"}).then(()=>{
-        log('offerAsset accepted updated')
+        console.log('offerAsset accepted updated')
       })
     } else {
-      log('acceptAsset not receiver')
+      console.log('acceptAsset not receiver')
     }
   })
 }

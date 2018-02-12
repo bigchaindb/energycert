@@ -367,7 +367,10 @@ export async function getTokenBalance(publicKey, tokenId) {
                 amount: cummulativeAmount
             }
         } else {
-            throw new Error('Token not found in user wallet')
+            return {
+                token: tokenId,
+                amount: 0
+            }
         }
     }
 }

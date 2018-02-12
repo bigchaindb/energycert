@@ -9,8 +9,6 @@ import * as compression from 'compression';
 import * as WebSocket from 'ws';
 
 // routes
-import ObjectsRouter from './routes/ObjectsRouter';
-import DifferentRouter from './routes/DifferentRouter';
 import UsersRouter from './routes/UsersRouter';
 
 // actions
@@ -21,9 +19,6 @@ const config = require('./config/config');
 
 // db models
 const models = require('./models');
-
-// master log
-const log = debug('server:master');
 
 // cluster master thread
 if (cluster.isMaster) {
@@ -44,7 +39,7 @@ if (cluster.isMaster) {
                 listenerService = cluster.fork(worker_env);
                 // restart on kill
                 listenerService.on('exit', function(code, signal) {
-                    log('respawning listener service');
+                    console.log('respawning listener service');
                     spawnListenerService();
                 });
             }
@@ -59,7 +54,7 @@ if (cluster.isMaster) {
                 restService = cluster.fork(worker_env);
                 // restart on kill
                 restService.on('exit', function(code, signal) {
-                    log('respawning rest service');
+                    console.log('respawning rest service');
                     spawnRestService();
                 });
             }
@@ -72,7 +67,7 @@ if (cluster.isMaster) {
     switch(process.env['WORKER_TYPE']) {
 
       case 'listenerService':
-          log('starting blockchain listener')
+          console.log('starting blockchain listener')
           const ws = new WebSocket(config.ws_url, {origin: 'http://localhost:9984'});
           ws.on('open', function open() {
             //console.log('connected');
@@ -87,7 +82,7 @@ if (cluster.isMaster) {
 
       case 'restService':
           // rest api http express server
-          log('starting rest api')
+          console.log('starting rest api')
           var app = express();
           // middleware
           app.use(function(req, res, next) {
@@ -102,8 +97,6 @@ if (cluster.isMaster) {
           app.use(bodyParser.urlencoded({ extended: false }));
           app.use(compression())
           // routes
-          app.use('/api/v1/different', DifferentRouter);
-          app.use('/api/v1/objects', ObjectsRouter);
           app.use('/api/v1/users', UsersRouter);
           // listen
           var server = app.listen(4000);

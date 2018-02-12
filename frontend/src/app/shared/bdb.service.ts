@@ -385,7 +385,10 @@ export class BdbService {
                   amount: cummulativeAmount
               }
           } else {
-              throw new Error('Token not found in user wallet')
+              return {
+                  token: tokenId,
+                  amount: 0
+              }
           }
       }
   }
