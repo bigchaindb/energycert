@@ -198,6 +198,7 @@ function initializeDemo() {
         }
         // create tokens
         let tokensTx = yield BdbService_1.createNewDivisibleAsset(config.xtech_keypair, { data: config.init.nameOfToken }, null, config.init.amountOfTokens);
+        console.log("Add token id to config: " + tokensTx.id);
         // transfer tokens to each users
         let toPublicKeysAmounts = [];
         let avaliableAmount = config.init.amountOfTokens;

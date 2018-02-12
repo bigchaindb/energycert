@@ -13,5 +13,6 @@
     "bdb": {
         "apiUrl": "http://localhost:9984/api/v1/"
     },
-    "xtechpubkey": "HejcHtiQ2t4tHZZchSDVSuvWqfjYGHDxWJpcEfxkzTGP"
+    "xtechpubkey": "HejcHtiQ2t4tHZZchSDVSuvWqfjYGHDxWJpcEfxkzTGP",
+    "idOfToken": "f0ca4d2c74881f0be0f638828a945f4517bc0f4d8ebf776c56b7432811cc4ac0"
 }

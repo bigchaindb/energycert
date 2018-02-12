@@ -24,19 +24,10 @@ export class ProfileComponent implements OnInit {
   init() {
     let config = JSON.parse(localStorage.getItem('config'))
     let keypair = JSON.parse(localStorage.getItem('user'))
-    // tokens and profile
+    // profile
     this.bdbService.getAssetsInWallet(keypair.publicKey, false).then((res) => {
         res.forEach((currentAsset, index)=>{
           switch(currentAsset.asset.data.data){
-            case "Energy":
-              let amount = 0
-              for (let output of currentAsset.unspentTx.outputs) {
-                if (output.public_keys[0] === keypair.publicKey) {
-                  amount = amount + parseInt(output.amount)
-                }
-              }
-              this.tokens = amount
-              break;
             case "UserAsset":
               this.userProfile.username = currentAsset.metadata.name
               this.userProfile.email = currentAsset.metadata.email
@@ -87,6 +78,10 @@ export class ProfileComponent implements OnInit {
     this.xtechService.getUsersAmount().subscribe(
       result => { this.xtechWallet = result.json().amount },
     )
+    // get token mount
+    this.bdbService.getTokenBalance(keypair.publicKey, config.idOfToken).then((tokens)=>{
+      this.tokens = tokens.amount;
+    })
   }
 
   accept(asset_id) {
@@ -98,8 +93,14 @@ export class ProfileComponent implements OnInit {
       asset_id: asset_id
     }
     let metadata = null
-    this.bdbService.createNewAssetWithOwner(keypair ,config.xtechpubkey, asset, metadata).then((result)=>{
-      this.init()
+    this.bdbService.createNewAssetWithOwner(keypair, config.xtechpubkey, asset, metadata).then((result)=>{
+      // wait for confirmation
+
+      // query if not repeat query
+
+      // transfer tokens
+      // wait for confirmation
+      // this.init()
     })
   }
 

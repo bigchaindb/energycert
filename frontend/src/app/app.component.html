@@ -6,20 +6,28 @@
     <div class="collapse navbar-collapse" [class.show]="show">
         <ul class="navbar-nav ml-auto">
             <li class="nav-item">
+                <a class="nav-link" routerLink='/'>Dashboard</a>
+            </li>
+            <li *ngIf="!logged" class="nav-item">
                 <a class="nav-link" routerLink='/register'>Register</a>
             </li>
-            <li class="nav-item">
+            <li *ngIf="!logged" class="nav-item">
                 <a class="nav-link" routerLink='/login'>Login</a>
             </li>
-            <li class="nav-item">
+            <li *ngIf="logged" class="nav-item">
                 <a class="nav-link" routerLink='/profile'>Profile</a>
             </li>
+            <li *ngIf="logged" class="nav-item">
+                <a class="nav-link" (click)="logout()">Logout</a>
+            </li>
+            <!--
             <li class="nav-item">
                 <a class="nav-link" routerLink='/test'>Test</a>
             </li>
             <li class="nav-item">
                 <button class="btn btn-outline-success">Blockchain</button>
             </li>
+            -->
         </ul>
     </div>
 </nav>

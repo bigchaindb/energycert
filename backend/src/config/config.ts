@@ -18,6 +18,7 @@ config.init.users = [
 ];
 config.init.amountOfTokens = 1000000000;
 config.init.nameOfToken = "Energy"
+config.init.idOfToken = "f0ca4d2c74881f0be0f638828a945f4517bc0f4d8ebf776c56b7432811cc4ac0"
 
 config.xtech_api_url = "https://wallet.staging.payxapi.com/apiv2/wallet/";
 config.xtech_keypair = {

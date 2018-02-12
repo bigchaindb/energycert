@@ -13,10 +13,10 @@
                     </thead>
                     <tbody *ngIf="users;">
                         <tr *ngFor="let user of users; let i = index">
-                            <td>{{user.metadata.name}}</td>
-                            <td>XXXXXXX</td>
+                            <td>{{user.user.metadata.name}}</td>
+                            <td>{{user.tokens}}</td>
                             <td>
-                              <button class="btn btn-outline-primary" (click)='openMakeOffer(user)'>Send offer</button>
+                              <button class="btn btn-outline-primary" (click)='openMakeOffer(user.user)'>Send offer</button>
                             </td>
                         </tr>
                     </tbody>

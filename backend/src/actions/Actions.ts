@@ -229,6 +229,7 @@ export async function initializeDemo() {
     null,
     config.init.amountOfTokens
   )
+  console.log("Add token id to config: "+tokensTx.id);
 
   // transfer tokens to each users
   let toPublicKeysAmounts = []

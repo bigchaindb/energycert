@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "cross-env INIT=true node dist/index.js",
+    "start": "cross-env node dist/index.js",
+    "init": "cross-env INIT=true node dist/index.js",
     "build": "gulp build",
     "watch": "gulp watch"
   },

@@ -259,7 +259,7 @@ export class BdbService {
 
   // Transfers a BigchainDB asset from an input transaction to a new public key
   async transferAsset(tx: any, fromKeyPair: Keypair, toPublicKey: string, metadata: Metadata) {
-    await this._getConnection()
+    await this._getConnection();
 
     const condition = driver.Transaction.makeEd25519Condition(toPublicKey)
 
@@ -283,6 +283,111 @@ export class BdbService {
       })
 
     return trTx
+  }
+
+  async getOutputs(publicKey, spent = false) {
+      await this._getConnection()
+      return await this.conn.listOutputs(publicKey, spent)
+  }
+
+  async transferTokens(keypair, tokenId, amount, toPublicKey) {
+    const balances = []
+    const outputs = []
+    let cummulativeAmount = 0
+    let sufficientFunds = false
+
+    const trAmount = parseInt(amount)
+    const unspents = await this.getOutputs(keypair.publicKey, false)
+
+    if (unspents && unspents.length > 0) {
+      for (const unspent of unspents) {
+        const tx = await this.conn.getTransaction(unspent.transaction_id)
+        let assetId
+        if (tx.operation === 'CREATE') {
+          assetId = tx.id
+        }
+
+        if (tx.operation === 'TRANSFER') {
+          assetId = tx.asset.id
+        }
+
+        if (assetId === tokenId) {
+          const txAmount = parseInt(tx.outputs[unspent.output_index].amount)
+          cummulativeAmount += txAmount
+
+          balances.push({
+            tx: tx,
+            output_index: unspent.output_index
+          })
+        }
+
+        if (cummulativeAmount >= trAmount) {
+          sufficientFunds = true
+          break;
+        }
+      }
+
+      if (!sufficientFunds) {
+        throw new Error('Transfer failed. Not enough token balance!')
+      }
+
+      outputs.push({
+        publicKey: toPublicKey,
+        amount: trAmount
+      })
+
+      if (cummulativeAmount - trAmount > 0) {
+        outputs.push({
+          publicKey: keypair.publicKey,
+          amount: cummulativeAmount - trAmount
+        })
+      }
+
+      const metadata = {
+        event: 'Stake Transfer',
+        date: new Date(),
+        timestamp: Date.now()
+      }
+
+      const transfer = await this.conn.transferMultipleAssets(balances, keypair, outputs, metadata)
+      return transfer
+    }
+
+    throw new Error('Transfer failed. Not enough token balance!')
+  }
+
+  async getTokenBalance(publicKey, tokenId) {
+      const unspents = await this.getOutputs(publicKey, false)
+      let cummulativeAmount = 0
+      let ownsTokens = false
+      if (unspents && unspents.length > 0) {
+          for (const unspent of unspents) {
+              const tx = await this.conn.getTransaction(unspent.transaction_id)
+              let assetId
+              if (tx.operation === 'CREATE') {
+                  assetId = tx.id
+              }
+
+              if (tx.operation === 'TRANSFER') {
+                  assetId = tx.asset.id
+              }
+
+              if (assetId === tokenId) {
+                  ownsTokens = true
+                  const txAmount = parseInt(tx.outputs[unspent.output_index].amount)
+                  cummulativeAmount += txAmount
+              }
+          }
+
+          if (ownsTokens) {
+              return {
+                  token: tokenId,
+                  amount: cummulativeAmount
+              }
+          } else {
+              throw new Error('Token not found in user wallet')
+          }
+      }
   }
 
   // private: creates a connection to BDB server

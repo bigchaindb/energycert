@@ -19,8 +19,13 @@ export class DashboardComponent implements OnInit {
               private modalService: NgbModal) { }
 
   ngOnInit() {
+    let config = JSON.parse(localStorage.getItem('config'))
     this.bdbService.getAllUsers().then((users)=>{
-      this.users = users;
+      for (let user of users) {
+        this.bdbService.getTokenBalance(user.outputs[0].public_keys[0], config.idOfToken).then((tokens)=>{
+          this.users.push({user:user, tokens:tokens.amount})
+        })
+      }
     })
   }
 
