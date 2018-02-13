@@ -12,9 +12,9 @@ config.ws_url = 'ws://'+process.env.BIGCHAINDB_HOST+':9985/api/v1/streams/valid_
 config.init = {}
 config.init.initialize = process.env.INIT;
 config.init.users = [
-  {email:"test1@gmail.com",name:"test1",password:"test1"},
-  {email:"test2@gmail.com",name:"test2",password:"test2"},
-  {email:"test3@gmail.com",name:"test3",password:"test3"},
+  {email:"user1@gmail.com",name:"user1",password:"user1"},
+  {email:"user2@gmail.com",name:"user2",password:"user2"},
+  {email:"user3@gmail.com",name:"user3",password:"user3"},
 ];
 config.init.amountOfTokens = 1000000000;
 config.init.nameOfToken = "Energy"

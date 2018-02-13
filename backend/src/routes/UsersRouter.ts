@@ -1,8 +1,9 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import * as request from 'request';
 import * as xtechAPI from '../XtechService/xtechservice';
-const config =  require('../config/config');
 
+const config =  require('../config/config');
+const models = require('../models')
 
 export class UsersRouter {
     router: Router;
@@ -18,15 +19,19 @@ export class UsersRouter {
         call xtech API: POST /getwallet to get amount ´
     */
     getAmount(req: Request, res: Response, next: NextFunction) {
-      
-        // call xtech API: POST /getwallet
-       xtechAPI.getAmount(req.body.uuid)
-       .then((result)=>{
+      // get user wallet for publickey
+      models.users.findOne({where:{publickey:req.body.publicKey}}).then((user)=>{
+        if(user){
+          // call xtech API: POST /getwallet
+          xtechAPI.getAmount(user.userwallet)
+          .then((result)=>{
             return res.send({ 'amount': result.data[0].total_balance })})
-       .catch(function (err) {
-             return res.send({ 'error': err })})
+          .catch(function (err) {
+            return res.send({ 'error': err })
+          })
+        }
+      })
     }
-
     /**
         call xtech API: POST /transfer
     */

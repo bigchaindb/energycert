@@ -14,6 +14,7 @@ export class ProfileComponent implements OnInit {
   recivingOffers = []
   xtechWallet = undefined
   tokens = 0
+  loading = []
 
   constructor(private bdbService: BdbService, private xtechService: XtechService) { }
 
@@ -45,18 +46,18 @@ export class ProfileComponent implements OnInit {
     this.bdbService.searchAssetsGetFull(`"OfferAsset" "${keypair.publicKey}"`).then((results) => {
       for (const result of results) {
         if (
+          result.length === 2 &&
           result[0].asset.data.receiver_public_key === keypair.publicKey &&
-          result[1].metadata.allocation === "allocated" &&
-          result.length < 3
+          result[1].metadata.allocation === "allocated"
         ) {
           // get user asset name
-          console.log(result)
           this.bdbService.getProfileFromPublickey(result[0].asset.data.sender_public_key).then((profile)=>{
             this.recivingOffers.push({
               asset_id: result[0].id,
               name: profile.name,
               offered_tokens: result[0].asset.data.offered_tokens,
-              offered_money: result[0].asset.data.offered_money
+              offered_money: result[0].asset.data.offered_money,
+              offered_publicKey: result[0].asset.data.sender_public_key
             })
           })
         }
@@ -70,14 +71,15 @@ export class ProfileComponent implements OnInit {
               asset_id: result[0].id,
               name: profile.name,
               offered_tokens: result[0].asset.data.offered_tokens,
-              offered_money: result[0].asset.data.offered_money
+              offered_money: result[0].asset.data.offered_money,
+              offered_publicKey: result[0].asset.data.sender_public_key
             })
           })
         }
       }
     });
     // get wallet amount
-    this.xtechService.getUsersAmount().subscribe(
+    this.xtechService.getUsersAmount(keypair.publicKey).subscribe(
       result => { this.xtechWallet = result.json().amount },
     )
     // get token mount
@@ -86,30 +88,69 @@ export class ProfileComponent implements OnInit {
     })
   }
 
-  accept(asset_id) {
+  accept(offer) {
+    this.loading.push(offer.asset_id)
     let config = JSON.parse(localStorage.getItem('config'))
     let keypair = JSON.parse(localStorage.getItem('user'))
     let asset = {
       data:'AcceptAsset',
       timestamp: Date.now(),
-      asset_id: asset_id
+      asset_id: offer.asset_id
     }
     let metadata = null
     this.bdbService.createNewAssetWithOwner(keypair, config.xtechpubkey, asset, metadata).then((result)=>{
-      // wait for confirmation
-      // query if not repeat query
-      // transfer tokens
-      // wait for confirmation
-      // this.init()
+      setTimeout(()=>{this.checkOfferStatus(offer).then(()=>{console.log('101')})},3000);
     })
   }
 
+  async checkOfferStatus(offer){
+    let config = JSON.parse(localStorage.getItem('config'))
+    let keypair = JSON.parse(localStorage.getItem('user'))
+    let status = await this.getOfferStatus(offer.asset_id)
+    console.log(status)
+    switch(status) {
+      case 'accepted':
+        this.bdbService.transferTokens(keypair, config.idOfToken, offer.offered_tokens, offer.offered_publicKey, offer.asset_id).then((transfer)=>{
+          setTimeout(()=>{this.checkOfferStatus(offer).then(()=>{console.log('112')})},3000)
+        })
+        break
+      case 'finished':
+        let index = this.loading.indexOf(offer.asset_id);
+        if (index > -1) {
+          this.loading.splice(index, 1);
+        }
+        this.init()
+        break
+      default:
+        setTimeout(()=>{this.checkOfferStatus(offer).then(()=>{console.log('123')})},3000)
+    }
+  }
+
+  getOfferStatus(assetid) {
+    return this.bdbService.getSortedTransactions(assetid).then((offer)=>{
+      console.log(offer)
+      switch(offer.length) {
+        case 3:
+          if (offer[2].metadata.accepted === 'accepted') {
+            return 'accepted'
+          }
+          break
+        case 4:
+          if (offer[3].metadata.finished === 'finished') {
+            return 'finished'
+          }
+          break
+        default:
+          return ''
+      }
+    })
+  }
 
   cancel(asset_id) {
     let config = JSON.parse(localStorage.getItem('config'))
     let keypair = JSON.parse(localStorage.getItem('user'))
     let asset = {
-      data:'CancelAsset',
+      data: 'CancelAsset',
       timestamp: Date.now(),
       asset_id: asset_id
     }

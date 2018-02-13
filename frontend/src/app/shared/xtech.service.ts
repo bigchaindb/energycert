@@ -57,17 +57,17 @@ export class XtechService {
   }
 
 
-  getUsersAmount(userId : string = "51287e29-5601-454f-a0c5-0b542e868af1")
+  getUsersAmount(publicKey)
   {
     // call POST /getwallet in the backend
-    return this.http.post(this.backendURL+"/amount", {uuid: userId})
+    return this.http.post(this.backendURL+"/amount", {publicKey: publicKey})
   }
 
   test() {
     //this.signing();
     //  this.getUserProfile();
 
-      this.getUsersAmount();
+    //this.getUsersAmount();
 
   }
 }

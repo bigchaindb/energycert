@@ -60,7 +60,10 @@
                             <td>{{offer.offered_tokens}}</td>
                             <td>{{offer.offered_money}}</td>
                             <td>
-                                <button (click)="accept(offer.asset_id)" class="btn btn-outline-primary">Accept</button>
+                                <button [disabled]="loading.indexOf(offer.asset_id) !== -1" (click)="accept(offer)" class="btn btn-outline-primary">
+                                  <span *ngIf="loading.indexOf(offer.asset_id) === -1">Accept</span>
+                                  <span *ngIf="loading.indexOf(offer.asset_id) !== -1">Loading...</span>
+                                </button>
                             </td>
                         </tr>
                     </tbody>

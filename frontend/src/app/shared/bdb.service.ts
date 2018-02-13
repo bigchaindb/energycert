@@ -290,7 +290,8 @@ export class BdbService {
       return await this.conn.listOutputs(publicKey, spent)
   }
 
-  async transferTokens(keypair, tokenId, amount, toPublicKey) {
+  async transferTokens(keypair, tokenId, amount, toPublicKey, offerid) {
+
     const balances = []
     const outputs = []
     let cummulativeAmount = 0
@@ -343,17 +344,89 @@ export class BdbService {
         })
       }
 
-      const metadata = {
-        event: 'Stake Transfer',
-        date: new Date(),
-        timestamp: Date.now()
-      }
+      const metadata = {offer:offerid}
 
-      const transfer = await this.conn.transferMultipleAssets(balances, keypair, outputs, metadata)
+      const transfer = await this.transferMultipleAssets(balances, keypair, outputs, metadata)
       return transfer
     }
 
     throw new Error('Transfer failed. Not enough token balance!')
+  }
+
+  async transferMultipleAssets(unspentTxs, keypair, outputs, metadata) {
+
+      const transferOutputs = []
+      if (outputs.length > 0) {
+          for (const output of outputs) {
+              let condition = driver.Transaction.makeEd25519Condition(output.publicKey)
+              let transferOutput
+              if (output.amount > 0) {
+                  transferOutput = driver.Transaction.makeOutput(condition, output.amount.toString())
+              } else {
+                  transferOutput = driver.Transaction.makeOutput(condition)
+              }
+
+              transferOutput.public_keys = [output.publicKey]
+              transferOutputs.push(transferOutput)
+          }
+      }
+
+      const txTransfer = driver.Transaction.makeTransferTransaction(
+          unspentTxs,
+          transferOutputs,
+          metadata
+      )
+
+      const txSigned = driver.Transaction.signTransaction(txTransfer, keypair.privateKey)
+      let trTx
+      await this.conn.postTransaction(txSigned)
+          .then(() => this.conn.pollStatusAndFetchTransaction(txSigned.id))
+          .then(retrievedTx => {
+              trTx = retrievedTx
+          })
+
+      return trTx
+  }
+
+  async getSortedTransactions(assetId) {
+    return this.conn.listTransactions(assetId)
+      .then((txList) => {
+        if (txList.length <= 1) {
+          return txList
+        }
+        const inputTransactions = []
+        txList.forEach((tx) =>
+          tx.inputs.forEach(input => {
+            if (input.fulfills) {
+              inputTransactions.push(input.fulfills.transaction_id)
+            }
+          })
+        )
+        const unspents = txList.filter((tx) => inputTransactions.indexOf(tx.id) === -1)
+        if (unspents.length) {
+          let tipTransaction = unspents[0]
+          let tipTransactionId = tipTransaction.inputs[0].fulfills.transaction_id
+          const sortedTxList = []
+          while (true) { // eslint-disable-line no-constant-condition
+            sortedTxList.push(tipTransaction)
+            try {
+              tipTransactionId = tipTransaction.inputs[0].fulfills.transaction_id
+            } catch (e) {
+              break
+            }
+            if (!tipTransactionId) {
+              break
+            }
+            tipTransaction = txList.filter((tx) => // eslint-disable-line no-loop-func
+              tx.id === tipTransactionId)[0]
+          }
+          return sortedTxList.reverse()
+        } else {
+          console.error('something went wrong while sorting transactions',
+            txList, inputTransactions)
+        }
+        return txList
+      })
   }
 
   async getTokenBalance(publicKey, tokenId) {

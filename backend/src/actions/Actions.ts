@@ -36,14 +36,12 @@ export function handleAction(inputData) {
           break
       }
     }
-    if (transaction.operation === "TRANSFER") {
-      // transfer of tokens?
-      console.log("transfer transaction: "+JSON.stringify(transaction))
-      /*
-      if(transaction.metadata.aaa === "token") {
-        handleTokenTransfer(transaction)
-      }
-      */
+    if (transaction.operation === "TRANSFER" &&
+      transaction.asset.id === config.init.idOfToken &&
+      transaction.metadata !== null &&
+      transaction.metadata.offer !== null
+    ) {
+      handleTokenTransfer(transaction)
     }
   })
 }
@@ -112,17 +110,16 @@ function handleOfferAsset(transaction) {
       // call xtech API: POST /getwallet
       xtechAPI.transfer(parameters)
       .then((result) => {
-        console.log(result)
-        /*
-        // if success
+        if (result.success === true){
           transferAsset(transaction, config.xtech_keypair, config.xtech_keypair.publicKey, {allocation:"allocated"}).then((tx)=>{
             console.log('offerAsset allocated updated')
           })
-        // else  //.catch((err) => {
-          // transferAsset(transaction, config.xtech_keypair, config.xtech_keypair.publicKey, {allocation:'failed'}).then((tx)=>{
-          //   log('offerAsset failed updated')
-          // })
-        */
+        } else {
+          console.log(result.msg)
+          transferAsset(transaction, config.xtech_keypair, config.xtech_keypair.publicKey, {allocation:'failed'}).then((tx)=>{
+            console.log('offerAsset failed updated')
+          })
+        }
       });
     } else {
       console.log("user has no xtech wallet")
@@ -151,13 +148,32 @@ function handleCancelAsset(transaction) {
       (transaction.inputs[0].owners_before[0] === txs[0].asset.data.receiver_public_key ||
       transaction.inputs[0].owners_before[0] === txs[0].asset.data.sender_public_key) &&
       txs[0].asset.data.data === 'OfferAsset' &&
-      txs[0].operation === 'CREATE' &&
       txs[1].metadata.allocation === 'allocated' &&
       txs.length < 3
     ) {
-      // TODO: return money to sender
-      transferAsset(txs[1], config.xtech_keypair, config.xtech_keypair.publicKey, {cancel:"canceled"}).then(()=>{
-        console.log('offerAsset cancel updated')
+      // get user wallet for publickey
+      models.users.findOne({where:{publickey:txs[0].asset.data.sender_public_key}}).then((user)=>{
+        if(user){
+          let parameters = {
+            to_wallet: user.userwallet,
+            from_wallet: config.xtech_escrow_wallet,
+            order_id: txs[0].id,
+            amount: txs[0].asset.data.offered_money
+          }
+          // call xtech API: POST /getwallet
+          xtechAPI.transfer(parameters)
+          .then((result) => {
+            if (result.success === true){
+              transferAsset(txs[1], config.xtech_keypair, config.xtech_keypair.publicKey, {cancel:"canceled"}).then(()=>{
+                console.log('offerAsset cancel updated')
+              })
+            } else {
+              console.log(result.msg)
+            }
+          });
+        } else {
+          console.log("user has no xtech wallet")
+        }
       })
     } else {
       console.log('cancelAsset not receiver')
@@ -185,7 +201,6 @@ function handleAcceptAsset(transaction) {
     if (
       transaction.inputs[0].owners_before[0] === txs[0].asset.data.receiver_public_key &&
       txs[0].asset.data.data === 'OfferAsset' &&
-      txs[0].operation === 'CREATE' &&
       txs[1].metadata.allocation === 'allocated' &&
       txs.length < 3
     ) {
@@ -199,21 +214,55 @@ function handleAcceptAsset(transaction) {
 }
 
 function handleTokenTransfer(transaction) {
-  // checks
-  /*
-  // money from escrow to new account
-   let parameters =
-   {
-      to_wallet : "51287e29-5601-454f-a0c5-0b542e868af1",
-      from_wallet : config.xtech_escrow_wallet,
-      order_id : 1,
-      amount:  2
-   }
-  // call xtech API: POST /getwallet
-  xtechAPI.transfer(parameters, function(results){
-    return results;
-    });
-  */
+  // get offer and check status
+  //console.log(transaction)
+  getSortedTransactions(transaction.metadata.offer).then((offer)=>{
+    console.log(offer)
+    if(
+      offer[0].asset.data.data === 'OfferAsset' &&
+      offer[1].metadata.allocation === 'allocated' &&
+      offer[2].metadata.accepted === 'accepted' &&
+      offer.lenght < 4
+    ){
+      console.log("here")
+      // check for amount
+      let amount = 0
+      for(let output of transaction.outputs){
+        if(output.public_keys[0] === offer[0].asset.data.receiver_public_key){
+          amount = amount + parseInt(output.amount)
+        }
+      }
+      if(amount !== parseInt(offer[0].asset.data.offered_tokens)){
+        console.log('no enough tokens')
+        return
+      }
+      // get user wallet for publickey
+      models.users.findOne({where:{publickey:offer[0].asset.data.receiver_public_key}}).then((user)=>{
+        if(user){
+          let parameters = {
+            to_wallet: user.userwallet,
+            from_wallet: config.xtech_escrow_wallet,
+            order_id: offer[0].id,
+            amount: offer[0].asset.data.offered_money
+          }
+          console.log(parameters)
+          // call xtech API: POST /getwallet
+          xtechAPI.transfer(parameters)
+          .then((result) => {
+            if (result.success === true){
+              transferAsset(offer[2], config.xtech_keypair, config.xtech_keypair.publicKey, {finished:"finished"}).then(()=>{
+                console.log('offerAsset finished updated')
+              })
+            } else {
+              console.log(result.msg)
+            }
+          });
+        } else {
+          console.log("user has no xtech wallet")
+        }
+      })
+    }
+  })
 }
 
 export async function initializeDemo() {
