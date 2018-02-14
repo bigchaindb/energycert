@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core'
+import * as WebSocket from 'ws'
 import { BdbService } from '../shared/bdb.service'
 import { XtechService } from '../shared/xtech.service'
 
@@ -15,6 +16,7 @@ export class ProfileComponent implements OnInit {
   xtechWallet = undefined
   tokens = 0
   loading = []
+  wsConnection = null
 
   constructor(private bdbService: BdbService, private xtechService: XtechService) { }
 
@@ -63,6 +65,7 @@ export class ProfileComponent implements OnInit {
         }
         if (
           result[0].asset.data.sender_public_key === keypair.publicKey &&
+          result[1].metadata.allocation === "allocated" &&
           result.length < 3
         ) {
           // get user asset name
@@ -92,6 +95,8 @@ export class ProfileComponent implements OnInit {
     this.loading.push(offer.asset_id)
     let config = JSON.parse(localStorage.getItem('config'))
     let keypair = JSON.parse(localStorage.getItem('user'))
+    // start listen for changes
+    this.startListening()
     let asset = {
       data:'AcceptAsset',
       timestamp: Date.now(),
@@ -99,10 +104,26 @@ export class ProfileComponent implements OnInit {
     }
     let metadata = null
     this.bdbService.createNewAssetWithOwner(keypair, config.xtechpubkey, asset, metadata).then((result)=>{
-      setTimeout(()=>{this.checkOfferStatus(offer).then(()=>{console.log('101')})},3000);
+      console.log(result)
     })
   }
 
+  startListening(){
+    let config = JSON.parse(localStorage.getItem('config'))
+    this.wsConnection = new WebSocket(config.ws_url);
+    this.wsConnection.on('open', function open() {
+      console.log('connected');
+    });
+    this.wsConnection.on('close', function close() {
+      console.log('disconnected');
+    });
+    this.wsConnection.on('message', function incoming(data) {
+      //handleAction(JSON.parse(data))
+      console.log(data)
+    });
+  }
+
+  /*
   async checkOfferStatus(offer){
     let config = JSON.parse(localStorage.getItem('config'))
     let keypair = JSON.parse(localStorage.getItem('user'))
@@ -145,6 +166,7 @@ export class ProfileComponent implements OnInit {
       }
     })
   }
+  */
 
   cancel(asset_id) {
     let config = JSON.parse(localStorage.getItem('config'))

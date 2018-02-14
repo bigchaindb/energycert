@@ -28,6 +28,7 @@
     "core-js": "^2.5.3",
     "js-sha3": "^0.7.0",
     "rxjs": "^5.5.6",
+    "ws": "^4.0.0",
     "zone.js": "^0.8.20"
   },
   "devDependencies": {
@@ -50,5 +51,9 @@
     "ts-node": "^4.1.0",
     "tslint": "^5.9.1",
     "typescript": "^2.6.2"
+  },
+  "optionalDependencies": {
+    "bufferutil": "^3.0.3",
+    "utf-8-validate": "^4.0.0"
   }
 }
